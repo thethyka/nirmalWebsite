@@ -39,10 +39,16 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - `db:migrate` needs env vars that Next.js loads automatically but standalone scripts don't: it runs via `node --env-file=.env.local` with `TS_NODE_COMPILER_OPTIONS='{"module":"commonjs"}'` (the repo's `tsconfig.json` targets `esnext`, which breaks plain `ts-node/register` — force commonjs for one-off scripts run this way).
   - Verified end-to-end against the real Neon DB and Blob store (insert/read a Memory row, upload/fetch a Blob file, insert a GalleryPhoto row) via a throwaway script, since deleted — not part of the app.
 
-## 3. Entry gate
+## 3. Entry gate DONE
 - Single password screen; guest password → session cookie unlocking public site; admin password → session cookie unlocking admin view. Wrong password → generic error.
 - Middleware gating all routes until a valid session cookie is present.
 - **Verify**: fresh browser (no cookie) is blocked everywhere; guest password unlocks public pages only; admin password reaches the admin view with no nav link/URL hint required.
+- **Context**:
+  - New env var `SESSION_SECRET` (32-byte random base64) added to `.env.local` — **not yet set in Vercel's prod/preview env**, needs `vercel env add SESSION_SECRET` before deploying past this point, or the gate will 500 in production.
+  - `middleware.ts` (project root) redirects any request without a valid session cookie to `/gate`, except `/gate`, `/api/gate`, `_next/*`, and common static file extensions. This will also gate future API routes (Memories/Gallery submissions) automatically — no extra wiring needed there.
+  - Session cookie `nirmal_session` (`lib/session.ts`) is a self-signed token (`role.expiresAtMs.hmacSignature`, HMAC-SHA256 via Web Crypto, no server-side session store), httpOnly, ~60 days. `role` is `"guest"` or `"admin"`; middleware also forwards it as an `x-session-role` request header for downstream pages to read.
+  - There is no admin *view* yet — issue 9 still needs to build it. Right now the admin password just yields a session with `role=admin`; nothing currently branches on it. Pages built in issues 4–8 should treat `x-session-role: admin` as "also let this render" rather than gating admin-only, since admins need to see the public pages too.
+  - `/gate` is a real (unlisted) route and `/api/gate` a real POST endpoint — both intentionally reachable without a cookie, since that's the only way to ever get one.
 
 ## 4. Navigation shell
 - Nav shows Home, Service (conditionally), Gallery, Memories. No admin link ever.
