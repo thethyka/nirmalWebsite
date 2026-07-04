@@ -4,12 +4,15 @@ Local tracking checklist, not GitHub issues. Work top to bottom — each depends
 
 Check an item's box only after it's been verified (built + actually exercised, not just "code written").
 
-Once an item is marked DONE, add a **Context** note under it: decisions made, gotchas hit, or state created while doing the work that isn't obvious from the bullets above (project/resource names, non-default choices, things future-you would otherwise have to rediscover). Never put actual secret values in it.
+Once an item is marked DONE, add a **Context** note under it: standing facts someone would need to know to work on later issues (resource/project names, non-default choices still in effect, constraints that must not be silently undone) — not a log of what happened or problems hit along the way. Never put actual secret values in it.
 
 ## 0. Repo cleanup — delete legacy birthday content DONE
 - Delete: `public/people/`, `public/people.json`, `public/groupImages/`, `public/gallery-images.json`, `public/birthday-song.mp3`, `public/shitbirthday-song.mp3`, `birthday-website.tsx`, `public/CNAME`, `scripts/generatePeopleData.js`, `scripts/generateGalleryImages.js`, `app/peeeeeeeeeple/`, `app/video/`.
 - Strip `generate:people` / `generate:gallery` from `package.json` scripts.
 - **Verify**: `npm run dev` starts clean with no references to deleted files/scripts.
+- **Context**:
+  - `components/navigation.tsx` (links to deleted `/peeeeeeeeeple`, `/video`), `components/music-provider.tsx` (references deleted `birthday-song.mp3`), and `app/gallery/page.tsx` (fetches deleted `gallery-images.json`/`groupImages/`) still point at removed files — left broken on purpose, to be replaced wholesale by Issues 4 (nav) and 7 (gallery), not patched piecemeal now.
+  - App is still fully birthday-themed (page titles, copy, purple/pink palette) — untouched until the relevant page issues and the Issue 11 design pass.
 
 ## 1. Project infra — live app, not static export DONE
 - Remove `output: 'export'` from `next.config.js`/`.mjs` (reconcile the duplicate configs into one).
@@ -17,20 +20,24 @@ Once an item is marked DONE, add a **Context** note under it: decisions made, go
 - Env vars scaffolded locally (`vercel env pull`) and in Vercel (Postgres connection string, Blob token, gate passwords).
 - **Verify**: `next build` succeeds as a server app (no export step); a bare deploy to a Vercel preview URL loads the default page.
 - **Context**:
-  - Vercel project: `dr-nirmal-singh-ahluwalia` under team scope `thethykas-projects`; GitHub repo auto-connected on `vercel link`.
-  - Kept `next.config.js` as the single config (README already referenced it); deleted `next.config.mjs`.
-  - Blob store created with **public** access (`nirmal-memorial-media`), not private — Gallery/playlist files render directly via `<img>`/`<audio>` src URLs, and the site's own password gate (Issue 3) is the intended access control, not Blob-level privacy.
-  - Repo had two lockfiles (`package-lock.json` + `pnpm-lock.yaml`); the pnpm one was stale against `package.json` and made Vercel's build fail (`ERR_PNPM_OUTDATED_LOCKFILE`). Deleted `pnpm-lock.yaml` — this project builds with npm.
-  - Vercel blocked deploy with "Vulnerable version of Next.js detected" on 15.5.3. Bumped to the latest **15.5.x patch** (not a major-version jump to 16) to stay low-risk this close to the funeral date — worth revisiting post-launch.
-  - New Vercel projects on this team default to "Vercel Authentication" (SSO) deployment protection, which blocks public access even to the production URL. Disabled via `vercel project protection disable dr-nirmal-singh-ahluwalia --sso` so mourners without Vercel accounts can reach the site.
-  - Local Vercel CLI was outdated (54.7.1) and had a bug adding env vars scoped to "all Preview branches" (`git_branch_required` error even when following its own suggested command). Upgraded globally to 54.20.1, which fixed it — if `vercel env add <name> preview --value ... --yes` ever loops on that error again, check the CLI version first.
-  - Gate passwords are real (not placeholders): guest = `WeLoveNirmal`, admin password chosen by the user. Both stored only in Vercel env vars (`GUEST_PASSWORD`, `ADMIN_PASSWORD`) and pulled into gitignored `.env.local` — never written to this file or committed.
+  - Vercel project: `dr-nirmal-singh-ahluwalia` under team scope `thethykas-projects`.
+  - `next.config.js` is the single config file (`.mjs` removed).
+  - Blob store (`nirmal-memorial-media`) is **public** access — Gallery/playlist files render directly via `<img>`/`<audio>` src URLs; the site's own password gate (Issue 3) is the intended access control, not Blob-level privacy.
+  - This project builds with npm — no `pnpm-lock.yaml`.
+  - Vercel's default "Vercel Authentication" (SSO) deployment protection is disabled for this project, so the production URL is reachable without a Vercel account. Don't re-enable it without also solving guest access another way.
+  - Gate passwords are real (not placeholders): guest = `WeLoveNirmal`, admin password chosen by the user. Both live only in Vercel env vars (`GUEST_PASSWORD`, `ADMIN_PASSWORD`) and gitignored `.env.local`.
 
-## 2. Data layer
+## 2. Data layer DONE
 - Neon schema: `Memory` and `GalleryPhoto` tables per SPECS §6.
 - Migration approach (Drizzle or plain SQL — pick one, keep it simple).
 - Blob upload helper (server-side) for photos.
 - **Verify**: a script or temporary route can insert/read a row and upload/fetch a Blob file against the real Neon/Blob instances.
+- **Context**:
+  - Plain SQL, no ORM: schema lives in `db/schema.sql` (two `CREATE TABLE IF NOT EXISTS` statements, quoted identifiers `"Memory"`/`"GalleryPhoto"` — queries against them must quote the names too). Applied via `npm run db:migrate`, which reads that file and runs each statement through `@neondatabase/serverless`. Re-running is safe (idempotent).
+  - `lib/db.ts` exports `sql`, a ready-to-use tagged-template query client built from `DATABASE_URL`. Import this in server code/route handlers rather than constructing a new client.
+  - `lib/blob.ts` exports `uploadPhoto(filename, file)` — wraps `@vercel/blob`'s `put`, stores under a `photos/` prefix with `access: "public"` and a random suffix, returns the public URL. This is the one helper both the Memories form (personal photo, photos-of-him) and the Gallery "+"/admin upload (Issues 7–9) should call.
+  - `db:migrate` needs env vars that Next.js loads automatically but standalone scripts don't: it runs via `node --env-file=.env.local` with `TS_NODE_COMPILER_OPTIONS='{"module":"commonjs"}'` (the repo's `tsconfig.json` targets `esnext`, which breaks plain `ts-node/register` — force commonjs for one-off scripts run this way).
+  - Verified end-to-end against the real Neon DB and Blob store (insert/read a Memory row, upload/fetch a Blob file, insert a GalleryPhoto row) via a throwaway script, since deleted — not part of the app.
 
 ## 3. Entry gate
 - Single password screen; guest password → session cookie unlocking public site; admin password → session cookie unlocking admin view. Wrong password → generic error.
