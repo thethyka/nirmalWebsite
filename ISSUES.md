@@ -91,11 +91,16 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - Playlist track list lives in `lib/playlist.ts` (`PLAYLIST` array of `{ title, src }`), pointing at `public/playlist/track-1.mp3` … `track-6.mp3` — 6 short placeholder tone clips (ffmpeg-generated sine waves), not real songs. Swap the files in `public/playlist/` and update `lib/playlist.ts` once the real 5–10 tracks are supplied (SPECS §8 open item); no other code needs to change.
   - Verified against the real Neon/Blob instances (not a mock): logged in via `/api/gate`, uploaded a real image through `/api/gallery`, confirmed it rendered in the grid, then deleted the test row + Blob file so no test data was left behind.
 
-## 8. Memories page — functionality
+## 8. Memories page — functionality DONE
 - Scrolling feed of Memory cards, newest visible without pagination/counter.
 - "Write a Memory" form: name, relationship, personal photo (optional), message, photos of him (optional) — in that order.
 - Instant publish (no approval queue); "photos of him" write into GalleryPhoto, personal photo stays attached only to the Memory.
 - **Verify**: submitting a Memory immediately appears in the feed; any "photos of him" submitted immediately appear in the Gallery; personal photo does not.
+- **Context**:
+  - `app/memories/page.tsx` is a server component (`export const dynamic = "force-dynamic"`) querying `"Memory"` directly via `lib/db.ts`'s `sql`, handing rows to `components/memories/memories-feed.tsx` (feed + "Write a Memory" dialog form, client-side) — same split pattern as Issue 7's Gallery.
+  - `app/api/memories/route.ts` (`POST`) is the one submission endpoint: multipart fields `name`, `relationship`, `message` (all required), `personal_photo` (optional single file), `photos_of_him` (optional, repeatable file field). Inserts one `Memory` row (with `personal_photo_url` if provided) and, separately, one `GalleryPhoto` row per "photos of him" file (`contributed_by` set to the submitter's name) — reuses `lib/blob.ts`'s `uploadPhoto` for both, same helper Issue 7 established. Already gated by the existing session middleware.
+  - The two photo concepts stay fully separate at the data layer, not just in the UI: personal photo only ever lands in `Memory.personal_photo_url`, "photos of him" only ever land as their own `GalleryPhoto` rows — neither path writes to both tables.
+  - Verified against the real Neon/Blob instances (not a mock): logged in via `/api/gate`, submitted a real Memory with both a personal photo and a "photo of him" through `/api/memories`, confirmed the memory appeared in the `/memories` feed and the photo-of-him (not the personal photo) appeared in `/gallery`, then deleted the test Memory row, GalleryPhoto row, and both Blob files so no test data was left behind.
 
 ## 9. Admin view
 - Edit a Memory's name/relationship/message in place.
