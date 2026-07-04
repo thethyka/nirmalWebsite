@@ -4,6 +4,8 @@ Local tracking checklist, not GitHub issues. Work top to bottom — each depends
 
 Check an item's box only after it's been verified (built + actually exercised, not just "code written").
 
+Once an item is marked DONE, add a **Context** note under it: decisions made, gotchas hit, or state created while doing the work that isn't obvious from the bullets above (project/resource names, non-default choices, things future-you would otherwise have to rediscover). Never put actual secret values in it.
+
 ## 0. Repo cleanup — delete legacy birthday content DONE
 - Delete: `public/people/`, `public/people.json`, `public/groupImages/`, `public/gallery-images.json`, `public/birthday-song.mp3`, `public/shitbirthday-song.mp3`, `birthday-website.tsx`, `public/CNAME`, `scripts/generatePeopleData.js`, `scripts/generateGalleryImages.js`, `app/peeeeeeeeeple/`, `app/video/`.
 - Strip `generate:people` / `generate:gallery` from `package.json` scripts.
@@ -14,6 +16,15 @@ Check an item's box only after it's been verified (built + actually exercised, n
 - `vercel link` the repo to a Vercel project; provision Neon Postgres + Vercel Blob via Marketplace.
 - Env vars scaffolded locally (`vercel env pull`) and in Vercel (Postgres connection string, Blob token, gate passwords).
 - **Verify**: `next build` succeeds as a server app (no export step); a bare deploy to a Vercel preview URL loads the default page.
+- **Context**:
+  - Vercel project: `dr-nirmal-singh-ahluwalia` under team scope `thethykas-projects`; GitHub repo auto-connected on `vercel link`.
+  - Kept `next.config.js` as the single config (README already referenced it); deleted `next.config.mjs`.
+  - Blob store created with **public** access (`nirmal-memorial-media`), not private — Gallery/playlist files render directly via `<img>`/`<audio>` src URLs, and the site's own password gate (Issue 3) is the intended access control, not Blob-level privacy.
+  - Repo had two lockfiles (`package-lock.json` + `pnpm-lock.yaml`); the pnpm one was stale against `package.json` and made Vercel's build fail (`ERR_PNPM_OUTDATED_LOCKFILE`). Deleted `pnpm-lock.yaml` — this project builds with npm.
+  - Vercel blocked deploy with "Vulnerable version of Next.js detected" on 15.5.3. Bumped to the latest **15.5.x patch** (not a major-version jump to 16) to stay low-risk this close to the funeral date — worth revisiting post-launch.
+  - New Vercel projects on this team default to "Vercel Authentication" (SSO) deployment protection, which blocks public access even to the production URL. Disabled via `vercel project protection disable dr-nirmal-singh-ahluwalia --sso` so mourners without Vercel accounts can reach the site.
+  - Local Vercel CLI was outdated (54.7.1) and had a bug adding env vars scoped to "all Preview branches" (`git_branch_required` error even when following its own suggested command). Upgraded globally to 54.20.1, which fixed it — if `vercel env add <name> preview --value ... --yes` ever loops on that error again, check the CLI version first.
+  - Gate passwords are real (not placeholders): guest = `WeLoveNirmal`, admin password chosen by the user. Both stored only in Vercel env vars (`GUEST_PASSWORD`, `ADMIN_PASSWORD`) and pulled into gitignored `.env.local` — never written to this file or committed.
 
 ## 2. Data layer
 - Neon schema: `Memory` and `GalleryPhoto` tables per SPECS §6.
