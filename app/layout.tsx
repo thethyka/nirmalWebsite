@@ -1,10 +1,15 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "../components/navigation";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cormorant",
+});
 
 export const metadata: Metadata = {
   title: "Dr. Nirmal Singh Ahluwalia",
@@ -18,8 +23,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100">
+      <body className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}>
+        <div className="min-h-screen bg-memorial">
           <Navigation />
           <main className="relative">{children}</main>
         </div>

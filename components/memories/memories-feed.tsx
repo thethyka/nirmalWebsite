@@ -74,7 +74,7 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
       <div className="flex justify-center mb-12">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-6 text-lg rounded-full shadow-lg">
+            <Button className="px-8 py-6 text-lg rounded-full shadow-md ring-1 ring-gold/40">
               <Heart className="mr-2" size={18} />
               Write a Memory
             </Button>
@@ -136,7 +136,7 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
                   onChange={(e) => setPhotosOfHim(e.target.files)}
                 />
               </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" disabled={submitting} className="w-full">
                 {submitting ? "Submitting..." : "Submit"}
               </Button>
@@ -147,25 +147,31 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
 
       <div className="max-w-2xl mx-auto space-y-6">
         {memories.length === 0 && (
-          <p className="text-center text-gray-600">No memories yet. Be the first to share one.</p>
+          <p className="text-center text-muted-foreground">
+            No memories yet. Be the first to share one.
+          </p>
         )}
         {memories.map((memory) => (
-          <Card key={memory.id} className="glass-effect border-2 border-pink-200">
+          <Card key={memory.id} className="glass-effect card-hover">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 {memory.personal_photo_url && (
                   <img
                     src={memory.personal_photo_url}
                     alt=""
-                    className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                    className="w-14 h-14 rounded-full object-cover flex-shrink-0 ring-2 ring-gold-soft/60"
                   />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-bold text-purple-700">{memory.name}</span>
-                    <span className="text-sm text-gray-500">{memory.relationship}</span>
+                    <span className="font-serif text-xl font-semibold text-primary">
+                      {memory.name}
+                    </span>
+                    <span className="text-sm text-gold">{memory.relationship}</span>
                   </div>
-                  <p className="mt-2 text-gray-700 whitespace-pre-wrap">{memory.message}</p>
+                  <p className="mt-2 text-ink leading-relaxed whitespace-pre-wrap">
+                    {memory.message}
+                  </p>
                 </div>
               </div>
             </CardContent>

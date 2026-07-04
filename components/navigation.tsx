@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Camera, Heart, MapPin } from "lucide-react";
 import { isServiceVisible } from "@/lib/service-visibility";
+import { Khanda } from "@/components/khanda";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -18,11 +19,15 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 glass-effect border-b border-white/20">
+    <nav className="fixed top-0 left-0 right-0 z-40 glass-effect border-b border-border/70">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2 text-purple-600 font-bold text-xl">
-            Dr. Nirmal Singh Ahluwalia
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 text-ink font-serif text-lg md:text-xl font-semibold tracking-wide"
+          >
+            <Khanda className="w-6 h-6 text-gold shrink-0" />
+            <span className="truncate">Dr. Nirmal Singh Ahluwalia</span>
           </Link>
 
           <div className="flex items-center gap-1">
@@ -32,8 +37,8 @@ export function Navigation() {
                 href={href}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
                   pathname === href
-                    ? "bg-purple-500 text-white shadow-lg"
-                    : "text-purple-600 hover:bg-white/30"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-ink-soft hover:bg-secondary hover:text-primary"
                 }`}
               >
                 <Icon size={16} />

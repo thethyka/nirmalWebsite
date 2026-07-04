@@ -14,7 +14,7 @@ export default async function GatePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <GateForm />
     </div>
   );

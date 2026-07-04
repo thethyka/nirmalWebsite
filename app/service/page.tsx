@@ -21,50 +21,56 @@ export default function ServicePage() {
     <div className="min-h-screen pt-16 relative overflow-hidden">
       <BackgroundEffects />
 
-      <div className="container mx-auto px-4 py-12 relative z-10 max-w-3xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-2">
+      <div className="container mx-auto px-4 py-16 relative z-10 max-w-3xl">
+        <div className="text-center mb-10 animate-fade-up">
+          <p className="text-sm uppercase tracking-[0.3em] text-gold mb-4">
+            Antim Ardaas
+          </p>
+          <h1 className="text-4xl md:text-5xl font-semibold text-memorial mb-4">
             Service Details
           </h1>
-          <p className="text-lg text-gray-700">Tuesday 7 July 2026</p>
+          <div className="gold-divider mb-4">&#10022;</div>
+          <p className="text-lg text-ink-soft tracking-wide">Tuesday 7 July 2026</p>
         </div>
 
-        <Card className="glass-effect border-2 border-pink-200 mb-8">
+        <Card className="glass-effect mb-6 animate-fade-up">
           <CardContent className="p-8">
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               {SCHEDULE.map(({ time, label }) => (
-                <li key={label} className="flex items-center gap-3 text-gray-800">
-                  <Clock size={20} className="text-purple-600 shrink-0" />
-                  <span className="font-semibold">{time}</span>
-                  <span>&mdash; {label}</span>
+                <li key={label} className="flex items-center gap-4 text-ink">
+                  <Clock size={20} className="text-gold shrink-0" />
+                  <span className="font-semibold w-20 tabular-nums">{time}</span>
+                  <span className="text-ink-soft">{label}</span>
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
 
-        <Card className="glass-effect border-2 border-pink-200 mb-8">
+        <Card className="glass-effect mb-6 animate-fade-up">
           <CardContent className="p-8">
-            <div className="flex items-start gap-3 text-gray-800">
-              <MapPin size={20} className="text-purple-600 shrink-0 mt-1" />
+            <div className="flex items-start gap-4 text-ink">
+              <MapPin size={20} className="text-gold shrink-0 mt-1" />
               <div>
-                <p className="font-semibold">Siri Guru Singh Sabha Gurdwara</p>
-                <p>Mombasa</p>
+                <p className="font-semibold font-serif text-xl">
+                  Siri Guru Singh Sabha Gurdwara
+                </p>
+                <p className="text-ink-soft">Mombasa</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-effect border-2 border-pink-200">
+        <Card className="glass-effect animate-fade-up">
           <CardContent className="p-8">
-            <div className="flex items-start gap-3 text-gray-800">
-              <Phone size={20} className="text-purple-600 shrink-0 mt-1" />
+            <div className="flex items-start gap-4 text-ink">
+              <Phone size={20} className="text-gold shrink-0 mt-1" />
               <div>
-                <p className="font-semibold">RSVP</p>
-                <p>Placeholder RSVP contact.</p>
+                <p className="font-semibold font-serif text-xl">RSVP</p>
+                <p className="text-ink-soft">Placeholder RSVP contact.</p>
               </div>
             </div>
-            <p className="text-sm text-gray-500 italic mt-4">
+            <p className="text-sm text-muted-foreground italic mt-4">
               Placeholder text &mdash; to be replaced with the real RSVP contact.
             </p>
           </CardContent>

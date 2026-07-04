@@ -78,7 +78,7 @@ function EditMemoryForm({
           required
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save"}
@@ -117,10 +117,10 @@ function MemoriesAdmin({
   return (
     <div className="space-y-4">
       {memories.length === 0 && (
-        <p className="text-center text-gray-600">No memories yet.</p>
+        <p className="text-center text-muted-foreground">No memories yet.</p>
       )}
       {memories.map((memory) => (
-        <Card key={memory.id} className="glass-effect border-2 border-pink-200">
+        <Card key={memory.id} className="glass-effect">
           <CardContent className="p-6">
             {editingId === memory.id ? (
               <EditMemoryForm
@@ -144,10 +144,12 @@ function MemoriesAdmin({
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-bold text-purple-700">{memory.name}</span>
-                    <span className="text-sm text-gray-500">{memory.relationship}</span>
+                    <span className="font-serif text-lg font-semibold text-primary">
+                      {memory.name}
+                    </span>
+                    <span className="text-sm text-gold">{memory.relationship}</span>
                   </div>
-                  <p className="mt-2 text-gray-700 whitespace-pre-wrap">{memory.message}</p>
+                  <p className="mt-2 text-ink whitespace-pre-wrap">{memory.message}</p>
                   <div className="flex gap-2 mt-3">
                     <Button size="sm" variant="outline" onClick={() => setEditingId(memory.id)}>
                       Edit
@@ -239,16 +241,16 @@ function GalleryAdmin({
           {uploading ? "Uploading..." : "Upload"}
         </Button>
       </form>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {photos.length === 0 && (
-          <p className="col-span-full text-center text-gray-600">No photos yet.</p>
+          <p className="col-span-full text-center text-muted-foreground">No photos yet.</p>
         )}
         {photos.map((photo) => (
           <Card
             key={photo.id}
-            className="glass-effect border-2 border-pink-200 overflow-hidden relative"
+            className="glass-effect overflow-hidden relative"
           >
             <CardContent className="p-0">
               <img src={photo.url} alt="" className="w-full h-40 object-cover" />
@@ -262,7 +264,7 @@ function GalleryAdmin({
                 <X size={16} />
               </button>
               {photo.contributed_by && (
-                <p className="text-xs text-gray-500 px-2 py-1 truncate">
+                <p className="text-xs text-muted-foreground px-2 py-1 truncate">
                   {photo.contributed_by}
                 </p>
               )}
@@ -284,12 +286,12 @@ export function AdminPanel({
   return (
     <div className="max-w-4xl mx-auto space-y-12">
       <section>
-        <h2 className="text-2xl font-bold text-purple-700 mb-4">Memories</h2>
+        <h2 className="font-serif text-2xl font-semibold text-primary mb-4">Memories</h2>
         <MemoriesAdmin initialMemories={initialMemories} />
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-purple-700 mb-4">Gallery</h2>
+        <h2 className="font-serif text-2xl font-semibold text-primary mb-4">Gallery</h2>
         <GalleryAdmin initialPhotos={initialPhotos} />
       </section>
     </div>

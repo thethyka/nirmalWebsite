@@ -18,10 +18,14 @@ export default async function GalleryPage() {
       <GalleryPlaylist />
 
       <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-7xl font-bold text-gradient mb-4">
-            Photo Gallery
+        <div className="text-center mb-12 animate-fade-up">
+          <p className="text-sm uppercase tracking-[0.3em] text-gold mb-4">
+            A life in pictures
+          </p>
+          <h1 className="text-4xl md:text-6xl font-semibold text-memorial mb-4">
+            Gallery
           </h1>
+          <div className="gold-divider">&#10022;</div>
         </div>
 
         <GalleryGrid initialPhotos={photos} />

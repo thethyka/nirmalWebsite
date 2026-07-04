@@ -1,81 +1,74 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Heart, Star, Sparkles } from "lucide-react";
+
+/**
+ * Quiet, warm ambience for the memorial pages: a faint floral flourish
+ * framing the top corners and a few slow-drifting gold petals. Deliberately
+ * low-contrast so it never competes with the content — the opposite of the
+ * old confetti/balloons.
+ */
+
+function Floral({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 200 200"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M8 8c34 2 60 12 78 34" />
+      <path d="M8 8c2 34 12 60 34 78" />
+      <path d="M40 12c10 6 16 14 18 26M12 40c6 10 14 16 26 18" />
+      {/* small blossoms along the stems */}
+      <g>
+        <circle cx="86" cy="42" r="6" />
+        <circle cx="98" cy="46" r="4" />
+        <circle cx="42" cy="86" r="6" />
+        <circle cx="46" cy="98" r="4" />
+        <circle cx="60" cy="60" r="7" />
+      </g>
+      {/* leaves */}
+      <path d="M64 30c8-4 16-2 20 6-9 2-16 0-20-6ZM30 64c-4 8-2 16 6 20 2-9 0-16-6-20Z" />
+    </svg>
+  );
+}
 
 export function BackgroundEffects() {
-  const [confetti, setConfetti] = useState<
-    Array<{ id: number; left: number; delay: number; color: string }>
+  const [petals, setPetals] = useState<
+    Array<{ id: number; left: number; delay: number; duration: number; size: number }>
   >([]);
 
   useEffect(() => {
-    const colors = [
-      "bg-pink-400",
-      "bg-purple-400",
-      "bg-yellow-400",
-      "bg-red-400",
-      "bg-blue-400",
-    ];
-    const newConfetti = Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 3,
-      color: colors[Math.floor(Math.random() * colors.length)],
-    }));
-    setConfetti(newConfetti);
+    setPetals(
+      Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        delay: Math.random() * 12,
+        duration: 14 + Math.random() * 12,
+        size: 6 + Math.random() * 8,
+      }))
+    );
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      {/* Floating balloons */}
-      <div className="absolute top-10 left-10 animate-float">
-        <div className="w-8 h-10 bg-pink-400 rounded-full shadow-lg"></div>
-        <div className="w-1 h-12 bg-gray-300 mx-auto"></div>
-      </div>
-      <div
-        className="absolute top-20 right-20 animate-float"
-        style={{ animationDelay: "1s" }}
-      >
-        <div className="w-8 h-10 bg-purple-400 rounded-full shadow-lg"></div>
-        <div className="w-1 h-12 bg-gray-300 mx-auto"></div>
-      </div>
-      <div
-        className="absolute top-40 left-1/4 animate-float"
-        style={{ animationDelay: "2s" }}
-      >
-        <div className="w-8 h-10 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="w-1 h-12 bg-gray-300 mx-auto"></div>
-      </div>
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <Floral className="absolute -top-4 -left-4 w-40 h-40 md:w-56 md:h-56 text-gold/25" />
+      <Floral className="absolute -top-4 -right-4 w-40 h-40 md:w-56 md:h-56 text-gold/25 -scale-x-100" />
 
-      {/* Floating icons */}
-      <Heart
-        className="absolute top-32 right-1/4 text-pink-300 animate-sparkle"
-        size={24}
-      />
-      <Heart
-        className="absolute top-64 left-1/3 text-red-300 animate-sparkle"
-        size={20}
-        style={{ animationDelay: "1s" }}
-      />
-      <Star
-        className="absolute top-48 right-1/3 text-yellow-400 animate-sparkle"
-        size={16}
-        style={{ animationDelay: "0.5s" }}
-      />
-      <Sparkles
-        className="absolute top-80 left-1/4 text-purple-400 animate-sparkle"
-        size={20}
-        style={{ animationDelay: "1.5s" }}
-      />
-
-      {/* Confetti */}
-      {confetti.map((piece) => (
+      {petals.map((p) => (
         <div
-          key={piece.id}
-          className={`absolute w-2 h-2 ${piece.color} animate-confetti`}
+          key={p.id}
+          className="absolute top-0 rounded-[50%_50%_50%_0] bg-gold-soft/40 animate-petal"
           style={{
-            left: `${piece.left}%`,
-            animationDelay: `${piece.delay}s`,
+            left: `${p.left}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
           }}
         />
       ))}

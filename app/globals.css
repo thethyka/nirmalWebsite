@@ -1,70 +1,110 @@
 @import "tailwindcss";
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
+/*
+  Memorial design system for Dr. Nirmal Singh Ahluwalia.
+  Palette from the funeral card: soft sky blue, white, gold, ink.
+  Everything is driven from the tokens below so the look can be
+  workshopped live by adjusting a handful of values.
+*/
+
+@theme {
+  /* shadcn semantic tokens — generate bg-*, text-*, border-* utilities */
+  --color-background: #ffffff;
+  --color-foreground: #263c52;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #263c52;
+
+  --color-popover: #ffffff;
+  --color-popover-foreground: #263c52;
+
+  --color-primary: #35597e;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #eef4fa;
+  --color-secondary-foreground: #35597e;
+
+  --color-muted: #f2f6fb;
+  --color-muted-foreground: #647a90;
+
+  --color-accent: #f7efd9;
+  --color-accent-foreground: #7a5a13;
+
+  --color-destructive: #b4443a;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #dbe6f1;
+  --color-input: #cdd9e5;
+  --color-ring: #7fa8c9;
+
+  /* memorial accents — bg-gold, text-ink, border-sky, etc. */
+  --color-gold: #b6892f;
+  --color-gold-soft: #d9c27e;
+  --color-gold-pale: #f4ead0;
+  --color-sky: #7fa8c9;
+  --color-sky-soft: #cfe0ef;
+  --color-sky-pale: #eaf3fb;
+  --color-ink: #263c52;
+  --color-ink-soft: #4d6379;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, "Times New Roman", serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
   }
-  50% {
-    transform: translateY(-20px);
+  body {
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
   }
 }
 
-@keyframes sparkle {
+/* ---- Soft page background: sky at the edges fading to white ---- */
+.bg-memorial {
+  background-color: #f7fbff;
+  background-image:
+    radial-gradient(60rem 40rem at 50% -10rem, var(--color-sky-pale), transparent 70%),
+    linear-gradient(180deg, #f4f9fe 0%, #ffffff 40%, #ffffff 100%);
+}
+
+/* ---- Gentle animations (replacing the birthday float/confetti) ---- */
+@keyframes drift {
   0%,
   100% {
-    opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
+    transform: translateY(-14px) rotate(4deg);
+  }
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translateY(-5vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
     opacity: 0.5;
-    transform: scale(1.2);
   }
-}
-
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(-100vh) rotate(0deg);
-    opacity: 1;
+  90% {
+    opacity: 0.5;
   }
   100% {
-    transform: translateY(100vh) rotate(360deg);
+    transform: translateY(105vh) translateX(6vw) rotate(220deg);
     opacity: 0;
   }
 }
 
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0.3) rotate(-10deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05) rotate(5deg);
-  }
-  70% {
-    transform: scale(0.9) rotate(-2deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-up {
+@keyframes fade-up {
   from {
-    transform: translateY(50px);
+    transform: translateY(24px);
     opacity: 0;
   }
   to {
@@ -73,57 +113,77 @@
   }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.animate-drift {
+  animation: drift 8s ease-in-out infinite;
 }
-.animate-sparkle {
-  animation: sparkle 2s ease-in-out infinite;
+.animate-petal {
+  animation: petal-fall linear infinite;
 }
-.animate-confetti {
-  animation: confetti-fall 3s linear infinite;
-}
-.animate-gradient {
-  animation: gradient-shift 3s ease infinite;
-}
-.animate-bounce-in {
-  animation: bounce-in 0.8s ease-out forwards;
-}
-.animate-slide-up {
-  animation: slide-up 0.6s ease-out forwards;
+.animate-fade-up {
+  animation: fade-up 0.8s ease-out both;
 }
 
-.bg-gradient-animated {
-  background: linear-gradient(-45deg, #ff9a9e, #fecfef, #fecfef, #ffecd2);
-  background-size: 400% 400%;
-}
-
-.text-gradient {
-  background: linear-gradient(
-    45deg,
-    #ff6b6b,
-    #4ecdc4,
-    #45b7d1,
-    #96ceb4,
-    #ffeaa7
-  );
-  background-size: 300% 300%;
+/* ---- Serif display heading with a warm gold-to-ink wash ---- */
+.text-memorial {
+  font-family: var(--font-serif);
+  background: linear-gradient(180deg, #3d5a78 0%, #2a4159 60%, #1f3145 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradient-shift 3s ease infinite;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
+.text-gold-gradient {
+  font-family: var(--font-serif);
+  background: linear-gradient(180deg, #cfa64e 0%, #b6892f 55%, #9a7220 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---- Frosted white card with a faint sky/gold edge ---- */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(219, 230, 241, 0.9);
+  box-shadow: 0 10px 30px -12px rgba(53, 89, 126, 0.18);
+}
+
+/* ---- A thin gold rule with a diamond, echoing the funeral card ---- */
+.gold-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--color-gold);
+}
+.gold-divider::before,
+.gold-divider::after {
+  content: "";
+  height: 1px;
+  width: min(6rem, 22vw);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold-soft),
+    var(--color-gold)
+  );
+}
+.gold-divider::after {
+  background: linear-gradient(
+    90deg,
+    var(--color-gold),
+    var(--color-gold-soft),
+    transparent
+  );
 }
 
 .card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .card-hover:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px -16px rgba(53, 89, 126, 0.32);
 }

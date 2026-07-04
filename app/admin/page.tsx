@@ -29,10 +29,11 @@ export default async function AdminPage() {
       <BackgroundEffects />
 
       <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-7xl font-bold text-gradient mb-4">
+        <div className="text-center mb-12 animate-fade-up">
+          <h1 className="text-4xl md:text-6xl font-semibold text-memorial mb-4">
             Admin
           </h1>
+          <div className="gold-divider">&#10022;</div>
         </div>
 
         <AdminPanel initialMemories={memories} initialPhotos={photos} />

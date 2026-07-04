@@ -61,21 +61,21 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {photos.length === 0 && (
-          <p className="col-span-full text-center text-gray-600">
+          <p className="col-span-full text-center text-muted-foreground">
             No photos yet.
           </p>
         )}
         {photos.map((photo, index) => (
           <Card
             key={photo.id}
-            className="card-hover glass-effect border-2 border-pink-200 cursor-pointer overflow-hidden"
+            className="card-hover glass-effect p-1.5 cursor-pointer overflow-hidden"
             onClick={() => setSelected(index)}
           >
-            <CardContent className="p-0">
+            <CardContent className="p-0 overflow-hidden rounded-md">
               <img
                 src={photo.url}
                 alt=""
-                className="w-full h-64 object-cover transition-transform duration-300 hover:scale-110"
+                className="w-full h-64 object-cover transition-transform duration-500 hover:scale-105"
               />
             </CardContent>
           </Card>
@@ -127,7 +127,7 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
           <button
             type="button"
             aria-label="Add a photo"
-            className="fixed bottom-6 right-6 z-30 w-9 h-9 rounded-full bg-white/40 hover:bg-white/70 text-purple-600 flex items-center justify-center shadow-sm opacity-50 hover:opacity-100 transition-opacity"
+            className="fixed bottom-6 right-6 z-30 w-9 h-9 rounded-full bg-white/60 hover:bg-white text-gold border border-border flex items-center justify-center shadow-sm opacity-50 hover:opacity-100 transition-opacity"
           >
             <Plus size={16} />
           </button>
@@ -156,7 +156,7 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
                 placeholder="e.g. Jyoti"
               />
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" disabled={submitting} className="w-full">
               {submitting ? "Uploading..." : "Upload"}
             </Button>
