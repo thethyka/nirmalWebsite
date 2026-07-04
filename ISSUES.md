@@ -50,10 +50,15 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - There is no admin *view* yet — issue 9 still needs to build it. Right now the admin password just yields a session with `role=admin`; nothing currently branches on it. Pages built in issues 4–8 should treat `x-session-role: admin` as "also let this render" rather than gating admin-only, since admins need to see the public pages too.
   - `/gate` is a real (unlisted) route and `/api/gate` a real POST endpoint — both intentionally reachable without a cookie, since that's the only way to ever get one.
 
-## 4. Navigation shell
+## 4. Navigation shell DONE
 - Nav shows Home, Service (conditionally), Gallery, Memories. No admin link ever.
 - Service link/page auto-hides from 8 July 2026 onward via date check (not manual).
 - **Verify**: nav renders correctly for guest session; manually flip a test date check to confirm Service disappears after the cutoff.
+- **Context**:
+  - `lib/service-visibility.ts` exports `isServiceVisible(now = new Date())`, cutoff hardcoded at `2026-07-08T00:00:00` (server local time, no timezone handling). Issue 6 (Service page) must import and reuse this same helper for its page-level enforcement, not re-implement the date check.
+  - `components/navigation.tsx` hides itself entirely on `/gate` (`pathname === "/gate"` → render `null`) — it was previously rendering above the password screen. `/service` and `/memories` are real nav links now but 404 until Issues 6 and 8 build those pages; expected in the meantime.
+  - Nav brand text changed from the old birthday title to "Dr. Nirmal Singh Ahluwalia" — functional/rough only, still on the old purple/pink birthday palette until Issue 11.
+  - Nav is identical for guest and admin sessions (no role check) per Issue 3's context — admins see the same public nav, no admin-only link is ever rendered.
 
 ## 5. Home page
 - His photo + life summary text (placeholder copy/image until supplied — see open items).
