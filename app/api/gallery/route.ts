@@ -1,0 +1,30 @@
+import { NextResponse } from "next/server";
+import { sql, type GalleryPhoto } from "@/lib/db";
+import { uploadPhoto } from "@/lib/blob";
+
+export async function POST(request: Request) {
+  const formData = await request.formData().catch(() => null);
+  const file = formData?.get("photo");
+  const contributedByRaw = formData?.get("contributed_by");
+  const contributedBy =
+    typeof contributedByRaw === "string" && contributedByRaw.trim()
+      ? contributedByRaw.trim()
+      : null;
+
+  if (!(file instanceof File) || file.size === 0) {
+    return NextResponse.json({ error: "A photo file is required" }, { status: 400 });
+  }
+  if (!file.type.startsWith("image/")) {
+    return NextResponse.json({ error: "File must be an image" }, { status: 400 });
+  }
+
+  const url = await uploadPhoto(file.name, file);
+
+  const rows = (await sql`
+    INSERT INTO "GalleryPhoto" (url, contributed_by)
+    VALUES (${url}, ${contributedBy})
+    RETURNING id, url, contributed_by, created_at
+  `) as GalleryPhoto[];
+
+  return NextResponse.json({ photo: rows[0] }, { status: 201 });
+}

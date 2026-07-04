@@ -78,11 +78,18 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - The page must export `export const dynamic = "force-dynamic";` — without it, Next prerenders the page as static at build time and bakes in whatever the date check evaluated to at that moment, so it would never flip to 404 post-cutoff without a redeploy. Verified by temporarily moving the cutoff to the past and confirming a direct hit to `/service` returns HTTP 404, then confirming normal 200 content with the real cutoff restored.
   - RSVP contact is a placeholder (no real contact supplied yet) — same "Placeholder" labeling convention as the Home page bio/photo; swap the text in `app/service/page.tsx` once supplied.
 
-## 7. Gallery page — functionality
+## 7. Gallery page — functionality DONE
 - Grid of GalleryPhoto rows from DB/Blob; lightbox on click.
 - Low-visibility "+" button for guest photo contributions (writes to GalleryPhoto with `contributed_by`).
 - Background playlist: 5–10 tracks (placeholder audio until supplied), auto-advance, loop, plays only while on page, stops on navigation away, no gate modal.
 - **Verify**: uploading via "+" shows up in the grid; lightbox opens/closes; audio starts on page entry and stops on leaving the page.
+- **Context**:
+  - `app/gallery/page.tsx` is now a server component (`export const dynamic = "force-dynamic"`) that queries `"GalleryPhoto"` directly via `lib/db.ts`'s `sql` and hands the rows to `components/gallery/gallery-grid.tsx` (grid + lightbox + the "+" upload dialog, all client-side).
+  - `app/api/gallery/route.ts` (`POST`) is the one upload endpoint: takes multipart `photo` (required) + `contributed_by` (optional text), calls `lib/blob.ts`'s `uploadPhoto`, inserts the `GalleryPhoto` row, returns it. Already gated by the existing session middleware (no extra auth wiring). Issue 9's admin upload should reuse this same route rather than adding a second one.
+  - The "+" button sits at `bottom-6 right-6` (not `left-6`) — deliberately, since the Next.js dev-tools badge occupies bottom-left in dev and physically intercepts clicks there; harmless in production but kept right-side to avoid the conflict.
+  - Removed `components/music-provider.tsx` and its use in `app/layout.tsx` entirely. It was a site-wide "Start the Party!" modal gate (sitting above every page, including `/gate` itself) pointing at the already-deleted `birthday-song.mp3` — directly incompatible with this issue's "no gate modal" playlist requirement. Music is now handled solely by `components/gallery/gallery-playlist.tsx`, mounted only inside the Gallery page tree, so Next unmounts (pauses) it automatically on navigation away.
+  - Playlist track list lives in `lib/playlist.ts` (`PLAYLIST` array of `{ title, src }`), pointing at `public/playlist/track-1.mp3` … `track-6.mp3` — 6 short placeholder tone clips (ffmpeg-generated sine waves), not real songs. Swap the files in `public/playlist/` and update `lib/playlist.ts` once the real 5–10 tracks are supplied (SPECS §8 open item); no other code needs to change.
+  - Verified against the real Neon/Blob instances (not a mock): logged in via `/api/gate`, uploaded a real image through `/api/gallery`, confirmed it rendered in the grid, then deleted the test row + Blob file so no test data was left behind.
 
 ## 8. Memories page — functionality
 - Scrolling feed of Memory cards, newest visible without pagination/counter.
