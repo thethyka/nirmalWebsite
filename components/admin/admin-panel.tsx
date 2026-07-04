@@ -1,0 +1,297 @@
+"use client";
+
+import { useRef, useState, type FormEvent } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { X } from "lucide-react";
+import type { Memory, GalleryPhoto } from "@/lib/db";
+
+function EditMemoryForm({
+  memory,
+  onSaved,
+  onCancel,
+}: {
+  memory: Memory;
+  onSaved: (memory: Memory) => void;
+  onCancel: () => void;
+}) {
+  const [name, setName] = useState(memory.name);
+  const [relationship, setRelationship] = useState(memory.relationship);
+  const [message, setMessage] = useState(memory.message);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/memories/${memory.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          relationship: relationship.trim(),
+          message: message.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Save failed");
+      onSaved(data.memory as Memory);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="space-y-1">
+        <Label htmlFor={`edit-name-${memory.id}`}>Name</Label>
+        <Input
+          id={`edit-name-${memory.id}`}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor={`edit-relationship-${memory.id}`}>Relationship</Label>
+        <Input
+          id={`edit-relationship-${memory.id}`}
+          value={relationship}
+          onChange={(e) => setRelationship(e.target.value)}
+          required
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor={`edit-message-${memory.id}`}>Message</Label>
+        <Textarea
+          id={`edit-message-${memory.id}`}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={4}
+          required
+        />
+      </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="flex gap-2">
+        <Button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save"}
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function MemoriesAdmin({
+  initialMemories,
+}: {
+  initialMemories: Memory[];
+}) {
+  const [memories, setMemories] = useState(initialMemories);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  async function handleDelete(id: number) {
+    if (!window.confirm("Delete this memory? This cannot be undone.")) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/memories/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      setMemories((prev) => prev.filter((m) => m.id !== id));
+    } catch {
+      window.alert("Failed to delete memory.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      {memories.length === 0 && (
+        <p className="text-center text-gray-600">No memories yet.</p>
+      )}
+      {memories.map((memory) => (
+        <Card key={memory.id} className="glass-effect border-2 border-pink-200">
+          <CardContent className="p-6">
+            {editingId === memory.id ? (
+              <EditMemoryForm
+                memory={memory}
+                onCancel={() => setEditingId(null)}
+                onSaved={(updated) => {
+                  setMemories((prev) =>
+                    prev.map((m) => (m.id === updated.id ? updated : m))
+                  );
+                  setEditingId(null);
+                }}
+              />
+            ) : (
+              <div className="flex items-start gap-4">
+                {memory.personal_photo_url && (
+                  <img
+                    src={memory.personal_photo_url}
+                    alt=""
+                    className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="font-bold text-purple-700">{memory.name}</span>
+                    <span className="text-sm text-gray-500">{memory.relationship}</span>
+                  </div>
+                  <p className="mt-2 text-gray-700 whitespace-pre-wrap">{memory.message}</p>
+                  <div className="flex gap-2 mt-3">
+                    <Button size="sm" variant="outline" onClick={() => setEditingId(memory.id)}>
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={deletingId === memory.id}
+                      onClick={() => handleDelete(memory.id)}
+                    >
+                      {deletingId === memory.id ? "Deleting..." : "Delete"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function GalleryAdmin({
+  initialPhotos,
+}: {
+  initialPhotos: GalleryPhoto[];
+}) {
+  const [photos, setPhotos] = useState(initialPhotos);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleUpload(e: FormEvent) {
+    e.preventDefault();
+    if (!file) {
+      setError("Choose a photo first.");
+      return;
+    }
+    setUploading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append("photo", file);
+      formData.append("contributed_by", "Admin");
+      const res = await fetch("/api/gallery", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setPhotos((prev) => [data.photo as GalleryPhoto, ...prev]);
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleDelete(id: number) {
+    if (!window.confirm("Delete this photo? This cannot be undone.")) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/gallery/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      setPhotos((prev) => prev.filter((p) => p.id !== id));
+    } catch {
+      window.alert("Failed to delete photo.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <form onSubmit={handleUpload} className="flex items-end gap-3 flex-wrap">
+        <div className="space-y-1">
+          <Label htmlFor="admin-gallery-photo">Add a photo</Label>
+          <Input
+            id="admin-gallery-photo"
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          />
+        </div>
+        <Button type="submit" disabled={uploading}>
+          {uploading ? "Uploading..." : "Upload"}
+        </Button>
+      </form>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {photos.length === 0 && (
+          <p className="col-span-full text-center text-gray-600">No photos yet.</p>
+        )}
+        {photos.map((photo) => (
+          <Card
+            key={photo.id}
+            className="glass-effect border-2 border-pink-200 overflow-hidden relative"
+          >
+            <CardContent className="p-0">
+              <img src={photo.url} alt="" className="w-full h-40 object-cover" />
+              <button
+                type="button"
+                aria-label="Delete photo"
+                disabled={deletingId === photo.id}
+                onClick={() => handleDelete(photo.id)}
+                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center"
+              >
+                <X size={16} />
+              </button>
+              {photo.contributed_by && (
+                <p className="text-xs text-gray-500 px-2 py-1 truncate">
+                  {photo.contributed_by}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AdminPanel({
+  initialMemories,
+  initialPhotos,
+}: {
+  initialMemories: Memory[];
+  initialPhotos: GalleryPhoto[];
+}) {
+  return (
+    <div className="max-w-4xl mx-auto space-y-12">
+      <section>
+        <h2 className="text-2xl font-bold text-purple-700 mb-4">Memories</h2>
+        <MemoriesAdmin initialMemories={initialMemories} />
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-bold text-purple-700 mb-4">Gallery</h2>
+        <GalleryAdmin initialPhotos={initialPhotos} />
+      </section>
+    </div>
+  );
+}

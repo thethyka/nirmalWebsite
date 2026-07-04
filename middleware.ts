@@ -14,9 +14,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const response = NextResponse.next();
-  response.headers.set("x-session-role", role);
-  return response;
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-session-role", role);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

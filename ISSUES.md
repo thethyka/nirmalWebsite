@@ -102,12 +102,18 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - The two photo concepts stay fully separate at the data layer, not just in the UI: personal photo only ever lands in `Memory.personal_photo_url`, "photos of him" only ever land as their own `GalleryPhoto` rows — neither path writes to both tables.
   - Verified against the real Neon/Blob instances (not a mock): logged in via `/api/gate`, submitted a real Memory with both a personal photo and a "photo of him" through `/api/memories`, confirmed the memory appeared in the `/memories` feed and the photo-of-him (not the personal photo) appeared in `/gallery`, then deleted the test Memory row, GalleryPhoto row, and both Blob files so no test data was left behind.
 
-## 9. Admin view
+## 9. Admin view DONE
 - Edit a Memory's name/relationship/message in place.
 - Delete a Memory (all fields incl. personal photo removed).
 - Delete any GalleryPhoto.
 - Upload new GalleryPhoto (same upload path as §7's "+" button, admin-attributed).
 - **Verify**: each of the four actions performed against real data and confirmed to persist after a page reload.
+- **Context**:
+  - `app/admin/page.tsx` — server component at the real but unadvertised `/admin` route. Checks `x-session-role` via `next/headers` `headers()`; anything other than `"admin"` gets `notFound()` (a genuine 404, not just a redirect), so a guest hitting the URL directly sees no hint an admin view exists. Renders `components/admin/admin-panel.tsx` (client) with the Memories list (inline edit/delete) and Gallery grid (delete + upload).
+  - Fixed a real bug in `middleware.ts` while building this: it previously set `x-session-role` only on the outgoing **response** headers (`NextResponse.next()` then `response.headers.set(...)`), which Next.js does not forward to `headers()` in Server Components/Route Handlers — only response headers set via `NextResponse.next({ request: { headers } })` are. Nothing before Issue 9 read that header, so this went unnoticed until now. All downstream admin checks depend on this fix.
+  - `app/api/memories/[id]/route.ts` (`PATCH`/`DELETE`) and `app/api/gallery/[id]/route.ts` (`DELETE`) are new, admin-only endpoints — each checks `x-session-role === "admin"` itself (403 otherwise) rather than relying on middleware, since the existing middleware only gates "has a session" not "is admin". `lib/blob.ts` gained `deletePhoto(url)` (wraps `@vercel/blob`'s `del`) so deletes also remove the underlying Blob file, not just the DB row.
+  - Admin's gallery upload reuses the existing `POST /api/gallery` route exactly as Issue 7 anticipated — the admin panel just always sends `contributed_by=Admin`, no new upload endpoint.
+  - Verified against the real Neon/Blob instances (not a mock): logged in via `/api/gate` with both passwords, confirmed guest gets a 404 on `/admin` and 403 on the new PATCH/DELETE endpoints, then as admin created/edited/deleted a test Memory (with personal photo) and a test GalleryPhoto through the real endpoints, confirming edits persisted across a reload and deletes removed both the DB row and the Blob file (checked with `@vercel/blob`'s `head`, since the CDN briefly still 200s a just-deleted URL from cache). No test data left behind afterward.
 
 ## 10. Deployment / go-live
 - Point `drnirmalsinghahluwalia.com` at the Vercel project (DNS from user).
