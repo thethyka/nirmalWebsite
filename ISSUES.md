@@ -9,7 +9,7 @@ Check an item's box only after it's been verified (built + actually exercised, n
 - Strip `generate:people` / `generate:gallery` from `package.json` scripts.
 - **Verify**: `npm run dev` starts clean with no references to deleted files/scripts.
 
-## 1. Project infra — live app, not static export
+## 1. Project infra — live app, not static export DONE
 - Remove `output: 'export'` from `next.config.js`/`.mjs` (reconcile the duplicate configs into one).
 - `vercel link` the repo to a Vercel project; provision Neon Postgres + Vercel Blob via Marketplace.
 - Env vars scaffolded locally (`vercel env pull`) and in Vercel (Postgres connection string, Blob token, gate passwords).
