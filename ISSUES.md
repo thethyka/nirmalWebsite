@@ -69,10 +69,14 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - `app/layout.tsx` metadata (`title`/`description`) also updated off the old "Happy Birthday Sashah" text to the memorial name — this was shared root metadata, not page-specific, so fixing it here to stop every page showing the birthday title in the browser tab.
   - Still on the birthday purple/pink `glass-effect`/`animate-*` styling shared with the rest of the site, per Issue 0/4 — untouched until Issue 11.
 
-## 6. Service page
+## 6. Service page DONE
 - Funeral logistics content from SPECS §5 (times, gurdwara, RSVP contact).
 - Same auto-hide behavior as §4, enforced at the page level too (direct URL hit after cutoff should not show stale info as current).
 - **Verify**: content matches the funeral card; page is unreachable/hidden after 7 July 2026 per the date check.
+- **Context**:
+  - `app/service/page.tsx` calls `notFound()` (from `next/navigation`) when `isServiceVisible()` is false, reusing the same helper from Issue 4 rather than a new date check.
+  - The page must export `export const dynamic = "force-dynamic";` — without it, Next prerenders the page as static at build time and bakes in whatever the date check evaluated to at that moment, so it would never flip to 404 post-cutoff without a redeploy. Verified by temporarily moving the cutoff to the past and confirming a direct hit to `/service` returns HTTP 404, then confirming normal 200 content with the real cutoff restored.
+  - RSVP contact is a placeholder (no real contact supplied yet) — same "Placeholder" labeling convention as the Home page bio/photo; swap the text in `app/service/page.tsx` once supplied.
 
 ## 7. Gallery page — functionality
 - Grid of GalleryPhoto rows from DB/Blob; lightbox on click.
