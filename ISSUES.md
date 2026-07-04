@@ -60,10 +60,14 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - Nav brand text changed from the old birthday title to "Dr. Nirmal Singh Ahluwalia" — functional/rough only, still on the old purple/pink birthday palette until Issue 11.
   - Nav is identical for guest and admin sessions (no role check) per Issue 3's context — admins see the same public nav, no admin-only link is ever rendered.
 
-## 5. Home page
+## 5. Home page DONE
 - His photo + life summary text (placeholder copy/image until supplied — see open items).
 - Rough layout only, default styling.
 - **Verify**: page renders with placeholder content, no broken layout.
+- **Context**:
+  - `app/page.tsx` fully replaced (was still the old birthday hero) with a rough bio layout: name/dates header, photo card, life-summary card. Both the photo (`public/placeholder-user.jpg`) and the summary paragraph are explicitly labeled "Placeholder" in-page so it's obvious real content (Issue open items) hasn't landed yet — swap the `Image` src and the paragraph text in `app/page.tsx` once the family supplies them, nothing else to wire up.
+  - `app/layout.tsx` metadata (`title`/`description`) also updated off the old "Happy Birthday Sashah" text to the memorial name — this was shared root metadata, not page-specific, so fixing it here to stop every page showing the birthday title in the browser tab.
+  - Still on the birthday purple/pink `glass-effect`/`animate-*` styling shared with the rest of the site, per Issue 0/4 — untouched until Issue 11.
 
 ## 6. Service page
 - Funeral logistics content from SPECS §5 (times, gurdwara, RSVP contact).

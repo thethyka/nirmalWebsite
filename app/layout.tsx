@@ -8,9 +8,8 @@ import { Navigation } from "../components/navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Happy Birthday Sashah! 🎉",
-  description: "A special birthday website created with love for Sashah",
-  generator: "Shivam",
+  title: "Dr. Nirmal Singh Ahluwalia",
+  description: "In loving memory of Dr. Nirmal Singh Ahluwalia",
 };
 
 export default function RootLayout({
