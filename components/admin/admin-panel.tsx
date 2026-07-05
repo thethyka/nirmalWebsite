@@ -215,33 +215,43 @@ function GalleryAdmin({
 }) {
   const [photos, setPhotos] = useState(initialPhotos);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(e: FormEvent) {
     e.preventDefault();
-    if (!file) {
-      setError("Choose a photo first.");
+    if (files.length === 0) {
+      setError("Choose at least one photo first.");
       return;
     }
     setUploading(true);
     setError(null);
-    try {
-      const formData = new FormData();
-      formData.append("photo", file);
-      formData.append("contributed_by", "Admin");
-      const res = await fetch("/api/gallery", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-      setPhotos((prev) => [data.photo as GalleryPhoto, ...prev]);
-      setFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploading(false);
+    const failed: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      setProgress({ done: i, total: files.length });
+      try {
+        const formData = new FormData();
+        formData.append("photo", files[i]);
+        formData.append("contributed_by", "Admin");
+        const res = await fetch("/api/gallery", { method: "POST", body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        setPhotos((prev) => [data.photo as GalleryPhoto, ...prev]);
+      } catch {
+        failed.push(files[i].name);
+      }
+    }
+
+    setProgress(null);
+    setUploading(false);
+    setFiles([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (failed.length > 0) {
+      setError(`Failed to upload: ${failed.join(", ")}`);
     }
   }
 
@@ -262,17 +272,22 @@ function GalleryAdmin({
     <div className="space-y-6">
       <form onSubmit={handleUpload} className="flex items-end gap-3 flex-wrap">
         <div className="space-y-1">
-          <Label htmlFor="admin-gallery-photo">Add a photo</Label>
+          <Label htmlFor="admin-gallery-photo">Add photos</Label>
           <Input
             id="admin-gallery-photo"
             type="file"
             accept="image/*"
+            multiple
             ref={fileInputRef}
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
           />
         </div>
-        <Button type="submit" disabled={uploading}>
-          {uploading ? "Uploading..." : "Upload"}
+        <Button type="submit" disabled={uploading || files.length === 0}>
+          {uploading
+            ? `Uploading ${(progress?.done ?? 0) + 1} of ${progress?.total ?? files.length}...`
+            : files.length > 0
+              ? `Upload ${files.length} photo${files.length === 1 ? "" : "s"}`
+              : "Upload"}
         </Button>
       </form>
       {error && <p className="text-sm text-destructive">{error}</p>}

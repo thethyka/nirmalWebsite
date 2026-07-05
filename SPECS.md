@@ -32,7 +32,7 @@ See [ADR 0001](./docs/adr/0001-live-app-on-vercel-with-neon-and-blob.md).
 Every visitor hits a single password screen before anything else loads.
 
 - One password field, two valid passwords:
-  - **Guest password** → unlocks the public site (Home, Service, Gallery, Memories) for that browser, session cookie lasting ~30–90 days.
+  - **Guest password** → unlocks the public site (Home, Gallery, Memories) for that browser, session cookie lasting ~30–90 days.
   - **Admin password** → unlocks the admin view instead, in the same session. No separate `/admin` URL, no nav link to it — reachable only by knowing the admin password.
 - Wrong password → stay on the gate with an error, no hint about which password types exist.
 
@@ -45,10 +45,6 @@ Primarily a bio page:
 - His photo
 - Life summary text (written by the user's mum — content to be supplied, not invented)
 - Room for a couple of small additional touches (TBD, low priority)
-
-### Service (temporary)
-- Funeral logistics from the funeral card: Kirtan & Antim Ardaas 12:00 PM, Cremation 1:00 PM, Kirtan Bhog (Gurdwara) 7:00 PM, Siri Guru Singh Sabha Gurdwara, Mombasa, RSVP contact.
-- Shown in nav only through 7 July 2026; **automatically stops appearing** from 8 July 2026 onward (date check, not a manual step).
 
 ### Gallery (`/gallery`)
 - Grid of photos of Nirmal's life. Sources:
@@ -119,3 +115,4 @@ The reusable parts of the codebase (Next.js + Tailwind + shadcn/ui component lib
 - A dedicated Video page (dropped; may return once a tribute video exists)
 - Any moderation/approval queue (rejected — see ADR 0003)
 - Multi-user admin accounts (single shared admin password only)
+- A Service/funeral-logistics page — built, then removed at the user's request as no longer required (see ISSUES.md §6)

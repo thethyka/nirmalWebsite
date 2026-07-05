@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Camera, Heart, MapPin } from "lucide-react";
-import { isServiceVisible } from "@/lib/service-visibility";
+import { Home, Camera, Heart } from "lucide-react";
 import { Khanda } from "@/components/khanda";
 
 export function Navigation() {
@@ -13,7 +12,6 @@ export function Navigation() {
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    ...(isServiceVisible() ? [{ href: "/service", label: "Service", icon: MapPin }] : []),
     { href: "/gallery", label: "Gallery", icon: Camera },
     { href: "/memories", label: "Memories", icon: Heart },
   ];

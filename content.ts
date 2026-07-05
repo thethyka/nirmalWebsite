@@ -1,15 +1,16 @@
 /**
  * SITE CONTENT — everything personal/editable about the site lives here:
- * his bio, his photo, the RSVP contact, and the Gallery playlist.
+ * his bio and his photo.
  *
  * To update:
- *  - Text (bio, rsvpContact): edit the strings below directly.
+ *  - Text (bio): edit the string below directly.
  *  - Photo: drop the new file into `public/`, then update `photo.src` to
- *    match its filename (e.g. "/nirmal.jpg").
- *  - Playlist: drop 5–10 audio files into `public/playlist/`, then replace
- *    the `playlist` array below with one entry per track.
+ *    match its filename (e.g. "/nirmal.jpg"), and flip `isPlaceholder` to
+ *    false.
  *
- * No other file should need to change to update any of this content.
+ * The Gallery playlist isn't configured here — it's just whatever .mp3
+ * files are in `public/playlist/` (see lib/playlist.ts). Add or remove
+ * files there; nothing else needs to change.
  */
 
 export const SITE_CONTENT = {
@@ -28,18 +29,4 @@ The family later moved to the United Kingdom, where Nirmal continued serving oth
 In retirement, Nirmal and Sukhnandan enjoyed travelling together until declining health led them back to Kenya in 2023. Surrounded by the love of his family, grandchildren and devoted local Kenyan nurses and carers, he spent his final years with dignity and peace.
 
 Throughout his life, Nirmal embodied the Sikh values of seva, humility, honest hard work and compassion. He leaves a legacy as a devoted husband, loving father and grandfather, respected physician, inspiring teacher and a man whose life was dedicated to serving humanity with kindness, integrity and grace.`,
-
-  rsvp: {
-    contact: "Placeholder RSVP contact.",
-    isPlaceholder: true,
-  },
-
-  playlist: [
-    { title: "Track 1 (placeholder)", src: "/playlist/track-1.mp3" },
-    { title: "Track 2 (placeholder)", src: "/playlist/track-2.mp3" },
-    { title: "Track 3 (placeholder)", src: "/playlist/track-3.mp3" },
-    { title: "Track 4 (placeholder)", src: "/playlist/track-4.mp3" },
-    { title: "Track 5 (placeholder)", src: "/playlist/track-5.mp3" },
-    { title: "Track 6 (placeholder)", src: "/playlist/track-6.mp3" },
-  ],
 };

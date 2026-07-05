@@ -2,6 +2,7 @@ import { sql, type GalleryPhoto } from "@/lib/db";
 import { BackgroundEffects } from "@/components/background-effects";
 import { GalleryGrid } from "@/components/gallery/gallery-grid";
 import { GalleryPlaylist } from "@/components/gallery/gallery-playlist";
+import { getPlaylistTracks } from "@/lib/playlist";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +12,12 @@ export default async function GalleryPage() {
     FROM "GalleryPhoto"
     ORDER BY created_at DESC
   `) as GalleryPhoto[];
+  const tracks = getPlaylistTracks();
 
   return (
     <div className="min-h-screen pt-16 relative overflow-hidden">
       <BackgroundEffects />
-      <GalleryPlaylist />
+      <GalleryPlaylist tracks={tracks} />
 
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="text-center mb-12 animate-fade-up">

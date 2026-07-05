@@ -29,7 +29,3 @@ The second password accepted at the Entry gate. Unlocks the admin view (edit/del
 **Entry gate**:
 The single password screen every visitor sees before anything else loads. Routes to either the public site or the admin view depending on which password was entered.
 _Avoid_: Login screen, admin login, admin route
-
-**Service page**:
-The temporary page showing funeral logistics (date, time, gurdwara, RSVP) for Tuesday 7 July 2026. Automatically stops appearing in navigation after that date.
-_Avoid_: Funeral page, event page

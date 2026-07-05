@@ -51,14 +51,13 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - `/gate` is a real (unlisted) route and `/api/gate` a real POST endpoint — both intentionally reachable without a cookie, since that's the only way to ever get one.
 
 ## 4. Navigation shell DONE
-- Nav shows Home, Service (conditionally), Gallery, Memories. No admin link ever.
-- Service link/page auto-hides from 8 July 2026 onward via date check (not manual).
-- **Verify**: nav renders correctly for guest session; manually flip a test date check to confirm Service disappears after the cutoff.
+- Nav shows Home, Gallery, Memories. No admin link ever.
+- **Verify**: nav renders correctly for guest session.
 - **Context**:
-  - `lib/service-visibility.ts` exports `isServiceVisible(now = new Date())`, cutoff hardcoded at `2026-07-08T00:00:00` (server local time, no timezone handling). Issue 6 (Service page) must import and reuse this same helper for its page-level enforcement, not re-implement the date check.
-  - `components/navigation.tsx` hides itself entirely on `/gate` (`pathname === "/gate"` → render `null`) — it was previously rendering above the password screen. `/service` and `/memories` are real nav links now but 404 until Issues 6 and 8 build those pages; expected in the meantime.
-  - Nav brand text changed from the old birthday title to "Dr. Nirmal Singh Ahluwalia" — functional/rough only, still on the old purple/pink birthday palette until Issue 11.
+  - `components/navigation.tsx` hides itself entirely on `/gate` (`pathname === "/gate"` → render `null`) — it was previously rendering above the password screen.
+  - Nav brand text changed from the old birthday title to "Dr. Nirmal Singh Ahluwalia".
   - Nav is identical for guest and admin sessions (no role check) per Issue 3's context — admins see the same public nav, no admin-only link is ever rendered.
+  - Originally also showed a conditionally-visible "Service" link (date-gated via `lib/service-visibility.ts`); both were removed — see Issue 6.
 
 ## 5. Home page DONE
 - His photo + life summary text (placeholder copy/image until supplied — see open items).
@@ -69,14 +68,11 @@ Once an item is marked DONE, add a **Context** note under it: standing facts som
   - `app/layout.tsx` metadata (`title`/`description`) also updated off the old "Happy Birthday Sashah" text to the memorial name — this was shared root metadata, not page-specific, so fixing it here to stop every page showing the birthday title in the browser tab.
   - Still on the birthday purple/pink `glass-effect`/`animate-*` styling shared with the rest of the site, per Issue 0/4 — untouched until Issue 11.
 
-## 6. Service page DONE
-- Funeral logistics content from SPECS §5 (times, gurdwara, RSVP contact).
-- Same auto-hide behavior as §4, enforced at the page level too (direct URL hit after cutoff should not show stale info as current).
-- **Verify**: content matches the funeral card; page is unreachable/hidden after 7 July 2026 per the date check.
+## 6. Service page REMOVED
+- Originally: funeral logistics content from SPECS §5 (times, gurdwara, RSVP contact), auto-hiding via a date check.
 - **Context**:
-  - `app/service/page.tsx` calls `notFound()` (from `next/navigation`) when `isServiceVisible()` is false, reusing the same helper from Issue 4 rather than a new date check.
-  - The page must export `export const dynamic = "force-dynamic";` — without it, Next prerenders the page as static at build time and bakes in whatever the date check evaluated to at that moment, so it would never flip to 404 post-cutoff without a redeploy. Verified by temporarily moving the cutoff to the past and confirming a direct hit to `/service` returns HTTP 404, then confirming normal 200 content with the real cutoff restored.
-  - RSVP contact is a placeholder (no real contact supplied yet) — same "Placeholder" labeling convention as the Home page bio/photo; swap the text in `app/service/page.tsx` once supplied.
+  - Removed entirely at the user's request — no longer required. `app/service/`, `lib/service-visibility.ts`, the conditional "Service" nav link (Issue 4), and the `rsvp` field in `content.ts` were all deleted; nothing references them anymore.
+  - If a Service-style page is ever needed again, it isn't a matter of un-deleting — `isServiceVisible()`'s hardcoded 7 July 2026 cutoff is now in the past, so any revival would need a fresh date check.
 
 ## 7. Gallery page — functionality DONE
 - Grid of GalleryPhoto rows from DB/Blob; lightbox on click.
