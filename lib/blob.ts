@@ -1,6 +1,7 @@
 import { put, del } from "@vercel/blob";
 import sharp from "sharp";
 import convertHeic from "heic-convert";
+import { createHash } from "crypto";
 
 const MAX_DIMENSION = 2000;
 const JPEG_QUALITY = 82;
@@ -62,13 +63,14 @@ export async function uploadPhoto(
   const inputBuffer = Buffer.isBuffer(file) ? file : Buffer.from(await file.arrayBuffer());
   const normalized = await normalizeImage(inputBuffer, filename, mimeType);
   const jpegName = filename.replace(/\.[^./]+$/, "") + ".jpg";
+  const contentHash = createHash("sha256").update(normalized).digest("hex");
 
   const blob = await put(`photos/${Date.now()}-${jpegName}`, normalized, {
     access: "public",
     addRandomSuffix: true,
     contentType: "image/jpeg",
   });
-  return blob.url;
+  return { url: blob.url, contentHash };
 }
 
 export async function deletePhoto(url: string) {

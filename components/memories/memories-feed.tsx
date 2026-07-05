@@ -154,12 +154,12 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
         {memories.map((memory) => (
           <Card key={memory.id} className="glass-effect card-hover">
             <CardContent className="p-6">
-              <div className="flex items-start gap-4">
+              <div className="flex items-center gap-5">
                 {memory.personal_photo_url && (
                   <img
                     src={memory.personal_photo_url}
                     alt=""
-                    className="w-14 h-14 rounded-full object-cover flex-shrink-0 ring-2 ring-gold-soft/60"
+                    className="w-24 h-24 rounded-full object-cover flex-shrink-0 ring-2 ring-gold-soft/60"
                   />
                 )}
                 <div className="flex-1 min-w-0">

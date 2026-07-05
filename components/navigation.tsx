@@ -22,13 +22,13 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link
             href="/"
-            className="flex items-center gap-2.5 text-ink font-serif text-lg md:text-xl font-semibold tracking-wide"
+            className="flex items-center gap-2.5 text-ink font-serif text-lg md:text-xl font-semibold tracking-wide min-w-0 flex-1 mr-2"
           >
             <Khanda className="w-6 h-6 text-gold shrink-0" />
-            <span className="truncate">Dr. Nirmal Singh Ahluwalia</span>
+            <span className="truncate min-w-0">Dr. Nirmal Singh Ahluwalia</span>
           </Link>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {navItems.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}

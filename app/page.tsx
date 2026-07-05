@@ -13,7 +13,7 @@ export default function HomePage() {
           <p className="text-sm uppercase tracking-[0.3em] text-gold mb-4">
             In loving memory
           </p>
-          <h1 className="text-4xl md:text-6xl font-semibold text-memorial mb-4">
+          <h1 className="text-4xl md:text-6xl font-semibold text-memorial leading-tight pb-1 mb-4">
             Dr. Nirmal Singh Ahluwalia
           </h1>
           <div className="gold-divider mb-4">&#10022;</div>
@@ -29,8 +29,8 @@ export default function HomePage() {
                 src={SITE_CONTENT.photo.src}
                 alt={SITE_CONTENT.photo.alt}
                 width={200}
-                height={200}
-                className="rounded-full object-cover ring-4 ring-white"
+                height={289}
+                className="w-[200px] h-[289px] rounded-full object-cover ring-4 ring-white"
               />
             </div>
             {SITE_CONTENT.photo.isPlaceholder && (

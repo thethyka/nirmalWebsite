@@ -10,6 +10,10 @@ export default async function MemoriesPage() {
     FROM "Memory"
     ORDER BY created_at DESC
   `) as Memory[];
+  for (let i = memories.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [memories[i], memories[j]] = [memories[j], memories[i]];
+  }
 
   return (
     <div className="min-h-screen pt-16 relative overflow-hidden">

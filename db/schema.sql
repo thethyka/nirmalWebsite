@@ -15,3 +15,5 @@ CREATE TABLE IF NOT EXISTS "GalleryPhoto" (
   contributed_by TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE "GalleryPhoto" ADD COLUMN IF NOT EXISTS content_hash TEXT;

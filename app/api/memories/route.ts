@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sql, type Memory } from "@/lib/db";
+import { sql, dedupeGalleryPhotos, type Memory } from "@/lib/db";
 import { uploadPhoto, isImageFile } from "@/lib/blob";
 
 export async function POST(request: Request) {
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       );
     }
     try {
-      personalPhotoUrl = await uploadPhoto(personalPhoto.name, personalPhoto, personalPhoto.type);
+      ({ url: personalPhotoUrl } = await uploadPhoto(personalPhoto.name, personalPhoto, personalPhoto.type));
     } catch {
       return NextResponse.json(
         { error: "Could not process the personal photo. Please try a different file." },
@@ -58,15 +58,18 @@ export async function POST(request: Request) {
 
   for (const photo of photosOfHim) {
     let url: string;
+    let contentHash: string;
     try {
-      url = await uploadPhoto(photo.name, photo, photo.type);
+      ({ url, contentHash } = await uploadPhoto(photo.name, photo, photo.type));
     } catch {
       continue; // skip a photo we can't process; the memory itself is already saved
     }
-    await sql`
-      INSERT INTO "GalleryPhoto" (url, contributed_by)
-      VALUES (${url}, ${name})
-    `;
+    const [inserted] = (await sql`
+      INSERT INTO "GalleryPhoto" (url, contributed_by, content_hash)
+      VALUES (${url}, ${name}, ${contentHash})
+      RETURNING id
+    `) as { id: number }[];
+    await dedupeGalleryPhotos(contentHash, inserted.id);
   }
 
   return NextResponse.json({ memory: rows[0] }, { status: 201 });
