@@ -21,3 +21,11 @@ ALTER TABLE "GalleryPhoto" ADD COLUMN IF NOT EXISTS content_hash TEXT;
 -- Manual display order set via the /order page. NULL = not yet placed; those
 -- photos sort after the ordered ones (see the gallery query in app/gallery/page.tsx).
 ALTER TABLE "GalleryPhoto" ADD COLUMN IF NOT EXISTS sort_order INTEGER;
+
+-- Editable site copy (currently just the bio), keyed by name. When a key is
+-- absent the app falls back to the default in content.ts (see lib/db.ts getBio).
+CREATE TABLE IF NOT EXISTS "SiteContent" (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

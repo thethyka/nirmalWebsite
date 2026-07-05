@@ -2,8 +2,11 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { BackgroundEffects } from "../components/background-effects";
 import { SITE_CONTENT } from "@/content";
+import { getBio } from "@/lib/db";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const bio = await getBio();
+
   return (
     <div className="min-h-screen pt-20 md:pt-24 relative overflow-hidden">
       <BackgroundEffects />
@@ -52,7 +55,7 @@ export default function HomePage() {
         <Card className="glass-effect animate-fade-up">
           <CardContent className="p-8">
             <p className="text-ink leading-relaxed text-lg whitespace-pre-line">
-              {SITE_CONTENT.bio}
+              {bio}
             </p>
           </CardContent>
         </Card>

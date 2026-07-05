@@ -102,6 +102,86 @@ function EditMemoryForm({
   );
 }
 
+function BioAdmin({ initialBio }: { initialBio: string }) {
+  const [bio, setBio] = useState(initialBio);
+  const [saved, setSaved] = useState(initialBio);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success">("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setStatus("idle");
+    try {
+      const res = await fetch("/api/site-content", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bio: bio.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Save failed");
+      setBio(data.bio as string);
+      setSaved(data.bio as string);
+      setStatus("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const dirty = bio.trim() !== saved.trim();
+
+  return (
+    <Card className="glass-effect">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-1">
+            <Label htmlFor="admin-bio">Biography</Label>
+            <Textarea
+              id="admin-bio"
+              value={bio}
+              onChange={(e) => {
+                setBio(e.target.value);
+                setStatus("idle");
+              }}
+              rows={16}
+              required
+            />
+            <p className="text-xs text-muted-foreground">
+              Shown on the home page. Blank lines separate paragraphs.
+            </p>
+          </div>
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          {status === "success" && !dirty && (
+            <p className="text-sm text-gold">Biography saved.</p>
+          )}
+          <div className="flex gap-2">
+            <Button type="submit" disabled={saving || !dirty}>
+              {saving ? "Saving..." : "Save"}
+            </Button>
+            {dirty && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setBio(saved);
+                  setStatus("idle");
+                  setError(null);
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
 function MemoriesAdmin({
   initialMemories,
 }: {
@@ -349,12 +429,19 @@ function GalleryAdmin({
 export function AdminPanel({
   initialMemories,
   initialPhotos,
+  initialBio,
 }: {
   initialMemories: Memory[];
   initialPhotos: GalleryPhoto[];
+  initialBio: string;
 }) {
   return (
     <div className="max-w-4xl mx-auto space-y-12">
+      <section>
+        <h2 className="font-serif text-2xl font-semibold text-primary mb-4">Biography</h2>
+        <BioAdmin initialBio={initialBio} />
+      </section>
+
       <section>
         <h2 className="font-serif text-2xl font-semibold text-primary mb-4">Memories</h2>
         <MemoriesAdmin initialMemories={initialMemories} />

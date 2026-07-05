@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { sql, type Memory, type GalleryPhoto } from "@/lib/db";
+import { sql, getBio, type Memory, type GalleryPhoto } from "@/lib/db";
 import { BackgroundEffects } from "@/components/background-effects";
 import { AdminPanel } from "@/components/admin/admin-panel";
 
@@ -24,6 +24,8 @@ export default async function AdminPage() {
     ORDER BY created_at DESC
   `) as GalleryPhoto[];
 
+  const bio = await getBio();
+
   return (
     <div className="min-h-screen pt-20 md:pt-24 relative overflow-hidden">
       <BackgroundEffects />
@@ -36,7 +38,11 @@ export default async function AdminPage() {
           <div className="gold-divider">&#10022;</div>
         </div>
 
-        <AdminPanel initialMemories={memories} initialPhotos={photos} />
+        <AdminPanel
+          initialMemories={memories}
+          initialPhotos={photos}
+          initialBio={bio}
+        />
       </div>
     </div>
   );

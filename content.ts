@@ -1,9 +1,11 @@
 /**
- * SITE CONTENT — everything personal/editable about the site lives here:
- * his bio and his photo.
+ * SITE CONTENT — his photo, plus the DEFAULT bio.
  *
  * To update:
- *  - Text (bio): edit the string below directly.
+ *  - Bio: edit it in the Admin page. The live bio is stored in the database
+ *    (the "SiteContent" table). The string below is only the initial default,
+ *    used until someone saves an edit in Admin (see lib/db.ts getBio). Editing
+ *    it here will NOT change the site once an admin has saved a bio.
  *  - Photo: drop the new file into `public/`, then update `photo.src` to
  *    match its filename (e.g. "/nirmal.jpg"), and flip `isPlaceholder` to
  *    false.
