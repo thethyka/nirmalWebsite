@@ -15,7 +15,7 @@
 
 export const SITE_CONTENT = {
   photo: {
-    src: "/placeholder-user.jpg",
+    src: "/nana.png",
     alt: "Dr. Nirmal Singh Ahluwalia",
     isPlaceholder: false,
   },
