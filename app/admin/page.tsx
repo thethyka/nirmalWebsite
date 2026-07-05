@@ -25,7 +25,7 @@ export default async function AdminPage() {
   `) as GalleryPhoto[];
 
   return (
-    <div className="min-h-screen pt-16 relative overflow-hidden">
+    <div className="min-h-screen pt-20 md:pt-24 relative overflow-hidden">
       <BackgroundEffects />
 
       <div className="container mx-auto px-4 py-12 relative z-10">

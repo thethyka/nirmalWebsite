@@ -19,7 +19,7 @@ export default async function GalleryPage() {
   const tracks = getPlaylistTracks();
 
   return (
-    <div className="min-h-screen pt-16 relative overflow-hidden">
+    <div className="min-h-screen pt-20 md:pt-24 relative overflow-hidden">
       <BackgroundEffects />
       <GalleryPlaylist tracks={tracks} />
 

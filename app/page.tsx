@@ -5,7 +5,7 @@ import { SITE_CONTENT } from "@/content";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen pt-16 relative overflow-hidden">
+    <div className="min-h-screen pt-20 md:pt-24 relative overflow-hidden">
       <BackgroundEffects />
 
       <div className="container mx-auto px-4 py-16 relative z-10 max-w-3xl">
