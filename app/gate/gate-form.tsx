@@ -40,7 +40,7 @@ export function GateForm() {
     <Card className="w-full max-w-sm glass-effect animate-fade-up text-center">
       <CardContent className="p-8">
         <div className="flex flex-col items-center">
-          <Khanda className="w-14 h-14 text-gold animate-drift" />
+          <Khanda className="w-14 h-14 text-gold" />
           <h1 className="mt-5 text-3xl font-serif font-semibold text-memorial">
             Dr. Nirmal Singh Ahluwalia
           </h1>
@@ -49,8 +49,8 @@ export function GateForm() {
           </p>
           <div className="gold-divider my-6 w-full text-xs">&#10022;</div>
           <p className="text-sm text-ink-soft mb-6">
-            A place to remember and celebrate his life. Please enter the password
-            you were given.
+            A place to remember and celebrate his life. Please enter the
+            password you were given.
           </p>
         </div>
 
@@ -73,7 +73,11 @@ export function GateForm() {
               Incorrect password. Please try again.
             </p>
           )}
-          <Button type="submit" className="w-full" disabled={loading || !password}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading || !password}
+          >
             {loading ? "Checking..." : "Enter"}
           </Button>
         </form>
