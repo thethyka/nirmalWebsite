@@ -17,3 +17,7 @@ CREATE TABLE IF NOT EXISTS "GalleryPhoto" (
 );
 
 ALTER TABLE "GalleryPhoto" ADD COLUMN IF NOT EXISTS content_hash TEXT;
+
+-- Manual display order set via the /order page. NULL = not yet placed; those
+-- photos sort after the ordered ones (see the gallery query in app/gallery/page.tsx).
+ALTER TABLE "GalleryPhoto" ADD COLUMN IF NOT EXISTS sort_order INTEGER;
