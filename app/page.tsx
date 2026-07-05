@@ -10,6 +10,14 @@ export default function HomePage() {
 
       <div className="container mx-auto px-4 py-16 relative z-10 max-w-3xl">
         <div className="text-center mb-10 animate-fade-up">
+          <p
+            className="text-gold text-5xl md:text-6xl leading-none mb-6 select-none"
+            style={{ fontFamily: "var(--font-gurmukhi)" }}
+            aria-label="Ek Onkar"
+            title="Ek Onkar"
+          >
+            &#2676;
+          </p>
           <p className="text-sm uppercase tracking-[0.3em] text-gold mb-4">
             In loving memory
           </p>
