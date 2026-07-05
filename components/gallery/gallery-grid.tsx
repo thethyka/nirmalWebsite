@@ -20,8 +20,9 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
   const [selected, setSelected] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,28 +33,38 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!file) {
-      setError("Choose a photo first.");
+    if (files.length === 0) {
+      setError("Choose at least one photo first.");
       return;
     }
     setSubmitting(true);
     setError(null);
-    try {
-      const formData = new FormData();
-      formData.append("photo", file);
-      if (name.trim()) formData.append("contributed_by", name.trim());
-      const res = await fetch("/api/gallery", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-      setPhotos((prev) => [data.photo as GalleryPhoto, ...prev]);
+    const failed: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      setProgress({ done: i, total: files.length });
+      try {
+        const formData = new FormData();
+        formData.append("photo", files[i]);
+        if (name.trim()) formData.append("contributed_by", name.trim());
+        const res = await fetch("/api/gallery", { method: "POST", body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        setPhotos((prev) => [data.photo as GalleryPhoto, ...prev]);
+      } catch {
+        failed.push(files[i].name);
+      }
+    }
+
+    setProgress(null);
+    setSubmitting(false);
+    setFiles([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (failed.length > 0) {
+      setError(`Failed to upload: ${failed.join(", ")}`);
+    } else {
       setOpen(false);
       setName("");
-      setFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setSubmitting(false);
     }
   }
 
@@ -138,13 +149,14 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="gallery-photo">Photo</Label>
+              <Label htmlFor="gallery-photo">Photos</Label>
               <Input
                 id="gallery-photo"
                 type="file"
                 accept="image/*"
+                multiple
                 ref={fileInputRef}
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
               />
             </div>
             <div className="space-y-2">
@@ -157,8 +169,12 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? "Uploading..." : "Upload"}
+            <Button type="submit" disabled={submitting || files.length === 0} className="w-full">
+              {submitting
+                ? `Uploading ${(progress?.done ?? 0) + 1} of ${progress?.total ?? files.length}...`
+                : files.length > 1
+                  ? `Upload ${files.length} photos`
+                  : "Upload"}
             </Button>
           </form>
         </DialogContent>
