@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql, type Memory } from "@/lib/db";
-import { uploadPhoto } from "@/lib/blob";
+import { uploadPhoto, isImageFile } from "@/lib/blob";
 
 export async function POST(request: Request) {
   const formData = await request.formData().catch(() => null);
@@ -22,20 +22,27 @@ export async function POST(request: Request) {
   const personalPhoto = formData.get("personal_photo");
   let personalPhotoUrl: string | null = null;
   if (personalPhoto instanceof File && personalPhoto.size > 0) {
-    if (!personalPhoto.type.startsWith("image/")) {
+    if (!isImageFile(personalPhoto)) {
       return NextResponse.json(
         { error: "Personal photo must be an image" },
         { status: 400 }
       );
     }
-    personalPhotoUrl = await uploadPhoto(personalPhoto.name, personalPhoto);
+    try {
+      personalPhotoUrl = await uploadPhoto(personalPhoto.name, personalPhoto, personalPhoto.type);
+    } catch {
+      return NextResponse.json(
+        { error: "Could not process the personal photo. Please try a different file." },
+        { status: 400 }
+      );
+    }
   }
 
   const photosOfHim = formData
     .getAll("photos_of_him")
     .filter((f): f is File => f instanceof File && f.size > 0);
   for (const photo of photosOfHim) {
-    if (!photo.type.startsWith("image/")) {
+    if (!isImageFile(photo)) {
       return NextResponse.json(
         { error: "Photos of him must be images" },
         { status: 400 }
@@ -50,7 +57,12 @@ export async function POST(request: Request) {
   `) as Memory[];
 
   for (const photo of photosOfHim) {
-    const url = await uploadPhoto(photo.name, photo);
+    let url: string;
+    try {
+      url = await uploadPhoto(photo.name, photo, photo.type);
+    } catch {
+      continue; // skip a photo we can't process; the memory itself is already saved
+    }
     await sql`
       INSERT INTO "GalleryPhoto" (url, contributed_by)
       VALUES (${url}, ${name})

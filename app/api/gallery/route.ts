@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql, type GalleryPhoto } from "@/lib/db";
-import { uploadPhoto } from "@/lib/blob";
+import { uploadPhoto, isImageFile } from "@/lib/blob";
 
 export async function POST(request: Request) {
   const formData = await request.formData().catch(() => null);
@@ -14,11 +14,19 @@ export async function POST(request: Request) {
   if (!(file instanceof File) || file.size === 0) {
     return NextResponse.json({ error: "A photo file is required" }, { status: 400 });
   }
-  if (!file.type.startsWith("image/")) {
+  if (!isImageFile(file)) {
     return NextResponse.json({ error: "File must be an image" }, { status: 400 });
   }
 
-  const url = await uploadPhoto(file.name, file);
+  let url: string;
+  try {
+    url = await uploadPhoto(file.name, file, file.type);
+  } catch {
+    return NextResponse.json(
+      { error: "Could not process that image. Please try a different file." },
+      { status: 400 }
+    );
+  }
 
   const rows = (await sql`
     INSERT INTO "GalleryPhoto" (url, contributed_by)
