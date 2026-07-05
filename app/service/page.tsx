@@ -3,6 +3,7 @@ import { Clock, MapPin, Phone } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { BackgroundEffects } from "../../components/background-effects";
 import { isServiceVisible } from "@/lib/service-visibility";
+import { SITE_CONTENT } from "@/content";
 
 export const dynamic = "force-dynamic";
 
@@ -67,12 +68,14 @@ export default function ServicePage() {
               <Phone size={20} className="text-gold shrink-0 mt-1" />
               <div>
                 <p className="font-semibold font-serif text-xl">RSVP</p>
-                <p className="text-ink-soft">Placeholder RSVP contact.</p>
+                <p className="text-ink-soft">{SITE_CONTENT.rsvp.contact}</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground italic mt-4">
-              Placeholder text &mdash; to be replaced with the real RSVP contact.
-            </p>
+            {SITE_CONTENT.rsvp.isPlaceholder && (
+              <p className="text-sm text-muted-foreground italic mt-4">
+                Placeholder text &mdash; to be replaced with the real RSVP contact.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

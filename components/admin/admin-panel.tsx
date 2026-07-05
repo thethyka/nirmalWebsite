@@ -6,6 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { X } from "lucide-react";
 import type { Memory, GalleryPhoto } from "@/lib/db";
 
@@ -99,16 +110,17 @@ function MemoriesAdmin({
   const [memories, setMemories] = useState(initialMemories);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function handleDelete(id: number) {
-    if (!window.confirm("Delete this memory? This cannot be undone.")) return;
     setDeletingId(id);
+    setDeleteError(null);
     try {
       const res = await fetch(`/api/memories/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       setMemories((prev) => prev.filter((m) => m.id !== id));
     } catch {
-      window.alert("Failed to delete memory.");
+      setDeleteError("Failed to delete memory.");
     } finally {
       setDeletingId(null);
     }
@@ -116,6 +128,7 @@ function MemoriesAdmin({
 
   return (
     <div className="space-y-4">
+      {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
       {memories.length === 0 && (
         <p className="text-center text-muted-foreground">No memories yet.</p>
       )}
@@ -154,14 +167,36 @@ function MemoriesAdmin({
                     <Button size="sm" variant="outline" onClick={() => setEditingId(memory.id)}>
                       Edit
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      disabled={deletingId === memory.id}
-                      onClick={() => handleDelete(memory.id)}
-                    >
-                      {deletingId === memory.id ? "Deleting..." : "Delete"}
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          disabled={deletingId === memory.id}
+                        >
+                          {deletingId === memory.id ? "Deleting..." : "Delete"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete this memory?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {memory.name}&rsquo;s memory, including any personal
+                            photo, will be permanently removed. This cannot be
+                            undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(memory.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
@@ -211,14 +246,13 @@ function GalleryAdmin({
   }
 
   async function handleDelete(id: number) {
-    if (!window.confirm("Delete this photo? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       const res = await fetch(`/api/gallery/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       setPhotos((prev) => prev.filter((p) => p.id !== id));
     } catch {
-      window.alert("Failed to delete photo.");
+      setError("Failed to delete photo.");
     } finally {
       setDeletingId(null);
     }
@@ -254,15 +288,36 @@ function GalleryAdmin({
           >
             <CardContent className="p-0">
               <img src={photo.url} alt="" className="w-full h-40 object-cover" />
-              <button
-                type="button"
-                aria-label="Delete photo"
-                disabled={deletingId === photo.id}
-                onClick={() => handleDelete(photo.id)}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center"
-              >
-                <X size={16} />
-              </button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Delete photo"
+                    disabled={deletingId === photo.id}
+                    className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center"
+                  >
+                    <X size={16} />
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete this photo?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will remove it from the Gallery for everyone. This
+                      cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(photo.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               {photo.contributed_by && (
                 <p className="text-xs text-muted-foreground px-2 py-1 truncate">
                   {photo.contributed_by}

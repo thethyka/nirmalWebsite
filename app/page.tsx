@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { BackgroundEffects } from "../components/background-effects";
+import { SITE_CONTENT } from "@/content";
 
 export default function HomePage() {
   return (
@@ -25,28 +26,25 @@ export default function HomePage() {
           <CardContent className="p-8 flex flex-col items-center">
             <div className="rounded-full p-1.5 bg-gradient-to-b from-gold-soft to-gold/40 shadow-md">
               <Image
-                src="/placeholder-user.jpg"
-                alt="Dr. Nirmal Singh Ahluwalia"
+                src={SITE_CONTENT.photo.src}
+                alt={SITE_CONTENT.photo.alt}
                 width={200}
                 height={200}
                 className="rounded-full object-cover ring-4 ring-white"
               />
             </div>
-            <p className="text-sm text-muted-foreground italic mt-4">
-              Placeholder photo &mdash; to be replaced with his actual photo.
-            </p>
+            {SITE_CONTENT.photo.isPlaceholder && (
+              <p className="text-sm text-muted-foreground italic mt-4">
+                Placeholder photo &mdash; to be replaced with his actual photo.
+              </p>
+            )}
           </CardContent>
         </Card>
 
         <Card className="glass-effect animate-fade-up">
           <CardContent className="p-8">
             <p className="text-ink leading-relaxed text-lg whitespace-pre-line">
-              {
-                "Placeholder life summary text.\n\nThis will be replaced with the life summary written by the family. For now, this space holds a paragraph or two describing Dr. Nirmal Singh Ahluwalia's life, so the page layout can be verified before the real text is supplied."
-              }
-            </p>
-            <p className="text-sm text-muted-foreground italic mt-4">
-              Placeholder text &mdash; to be replaced with the life summary from the family.
+              {SITE_CONTENT.bio}
             </p>
           </CardContent>
         </Card>
