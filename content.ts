@@ -26,7 +26,7 @@ At The Duke of Gloucester School, he served as Head Boy and worked alongside his
 
 The family later moved to the United Kingdom, where Nirmal continued serving others as a general practitioner, completing a Diploma in Addiction Medicine. In 1999, he and Sukhnandan settled in Australia, where he worked as a GP at Derbarl Yerrigan, an Aboriginal health clinic in outer Perth, and later as a GP in country Western Australia, caring for Aboriginal communities before retiring in 2016 and ending a medical career spanning more than five decades.
 
-In retirement, Nirmal and Sukhnandan enjoyed travelling together until declining health led them back to Kenya in 2023. Surrounded by the love of his family, his grandchildren — Kabir, Esha, Karam, Aryan, Amrit, Rohan, Veer, Angelina and Anaida — and devoted local Kenyan nurses and carers, he spent his final years with dignity and peace.
+In retirement, Nirmal and Sukhnandan enjoyed travelling together until declining health led them back to Kenya in 2023. Surrounded by the love of his family and devoted local Kenyan nurses and carers, he spent his final years with dignity and peace.
 
-Throughout his life, Nirmal embodied the Sikh values of seva, humility, honest hard work and compassion. He leaves a legacy as a devoted husband, loving father and grandfather, respected physician, inspiring teacher and a man whose life was dedicated to serving humanity with kindness, integrity and grace.`,
+Throughout his life, Nirmal embodied the Sikh values of seva, humility, honest hard work and compassion. He leaves a legacy as a devoted husband, loving father, respected physician, inspiring teacher and a man whose life was dedicated to serving humanity with kindness, integrity and grace. Above all, he was a cherished grandfather to Kabir, Esha, Karam, Aryan, Amrit, Rohan, Veer, Angelina and Anaida.`,
 };
