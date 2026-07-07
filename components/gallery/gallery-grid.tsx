@@ -95,7 +95,7 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
 
       {selected !== null && photos[selected] && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center px-4 pb-4 pt-24 md:pt-28"
           onClick={() => setSelected(null)}
         >
           <div
@@ -127,7 +127,7 @@ export function GalleryGrid({ initialPhotos }: { initialPhotos: GalleryPhoto[] }
             <img
               src={photos[selected].url}
               alt=""
-              className="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+              className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
             />
           </div>
         </div>
