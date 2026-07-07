@@ -16,7 +16,11 @@ import {
 import { Heart } from "lucide-react";
 import type { Memory } from "@/lib/db";
 
-export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] }) {
+export function MemoriesFeed({
+  initialMemories,
+}: {
+  initialMemories: Memory[];
+}) {
   const [memories, setMemories] = useState(initialMemories);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -49,7 +53,10 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
         }
       }
 
-      const res = await fetch("/api/memories", { method: "POST", body: formData });
+      const res = await fetch("/api/memories", {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Submission failed");
 
@@ -95,7 +102,9 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="memory-relationship">Relationship to Nirmal</Label>
+                <Label htmlFor="memory-relationship">
+                  Relationship to Nirmal
+                </Label>
                 <Input
                   id="memory-relationship"
                   value={relationship}
@@ -105,13 +114,17 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="memory-personal-photo">Your photo (optional)</Label>
+                <Label htmlFor="memory-personal-photo">
+                  Your photo (optional)
+                </Label>
                 <Input
                   id="memory-personal-photo"
                   type="file"
                   accept="image/*"
                   ref={personalPhotoRef}
-                  onChange={(e) => setPersonalPhoto(e.target.files?.[0] ?? null)}
+                  onChange={(e) =>
+                    setPersonalPhoto(e.target.files?.[0] ?? null)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -126,7 +139,9 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="memory-photos-of-him">Photos of him (optional)</Label>
+                <Label htmlFor="memory-photos-of-him">
+                  Photos of him (optional)
+                </Label>
                 <Input
                   id="memory-photos-of-him"
                   type="file"
@@ -145,7 +160,7 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
         </Dialog>
       </div>
 
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6">
         {memories.length === 0 && (
           <p className="text-center text-muted-foreground">
             No memories yet. Be the first to share one.
@@ -154,26 +169,22 @@ export function MemoriesFeed({ initialMemories }: { initialMemories: Memory[] })
         {memories.map((memory) => (
           <Card key={memory.id} className="glass-effect card-hover">
             <CardContent className="p-6">
-              <div className="flex items-center gap-5">
+              <div className="flex flex-col items-center text-center">
+                <span className="font-serif text-xl font-semibold text-primary">
+                  {memory.name}
+                </span>
+                <span className="text-sm text-gold">{memory.relationship}</span>
                 {memory.personal_photo_url && (
                   <img
                     src={memory.personal_photo_url}
                     alt=""
-                    className="w-24 h-24 rounded-full object-cover flex-shrink-0 ring-2 ring-gold-soft/60"
+                    className="mt-4 w-48 h-48 rounded-full object-cover ring-2 ring-gold-soft/60"
                   />
                 )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-serif text-xl font-semibold text-primary">
-                      {memory.name}
-                    </span>
-                    <span className="text-sm text-gold">{memory.relationship}</span>
-                  </div>
-                  <p className="mt-2 text-ink leading-relaxed whitespace-pre-wrap">
-                    {memory.message}
-                  </p>
-                </div>
               </div>
+              <p className="mt-4 text-ink leading-relaxed whitespace-pre-wrap">
+                {memory.message}
+              </p>
             </CardContent>
           </Card>
         ))}
