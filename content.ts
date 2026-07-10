@@ -9,6 +9,11 @@
  *  - Photo: drop the new file into `public/`, then update `photo.src` to
  *    match its filename (e.g. "/nirmal.jpg"), and flip `isPlaceholder` to
  *    false.
+ *  - Antam video: upload the recording to YouTube as Unlisted, then paste the
+ *    video ID into `antam.youtubeId` below. From an unlisted URL like
+ *    https://youtu.be/AbC123xyz-Q the ID is "AbC123xyz-Q" (or the "v=" value in
+ *    https://www.youtube.com/watch?v=AbC123xyz-Q). Leave it "" to show the
+ *    "available shortly" placeholder on the Antam page.
  *
  * The Gallery playlist isn't configured here — it's just whatever .mp3
  * files are in `public/playlist/` (see lib/playlist.ts). Add or remove
@@ -20,6 +25,10 @@ export const SITE_CONTENT = {
     src: "/nana.png",
     alt: "Dr. Nirmal Singh Ahluwalia",
     isPlaceholder: false,
+  },
+
+  antam: {
+    youtubeId: "https://www.youtube.com/watch?v=JDzRzQJzdTY",
   },
 
   bio: `Dr. Nirmal Singh Ahluwalia was born at the Indian Maternity Hospital in Nairobi, Kenya, in 1939. His parents, Sardar Dalip Singh Ahluwalia and Sardarni Tarlochan Kaur, emigrated from Jalandhar, Punjab, to Kenya in the 1930s to build the railway during the British Raj. As the eldest of six children, Nirmal embraced responsibility from an early age and became a role model through his leadership, humility and spirit of seva (selfless service).

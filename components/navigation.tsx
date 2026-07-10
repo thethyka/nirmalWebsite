@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Camera, Heart } from "lucide-react";
+import { Home, Camera, Heart, Video } from "lucide-react";
 import { Khanda } from "@/components/khanda";
 
 export function Navigation() {
@@ -13,6 +13,7 @@ export function Navigation() {
   const navItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/gallery", label: "Gallery", icon: Camera },
+    { href: "/antam", label: "Antam", icon: Video },
     { href: "/memories", label: "Memories", icon: Heart },
   ];
 
